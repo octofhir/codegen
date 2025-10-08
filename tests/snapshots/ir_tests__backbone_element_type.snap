@@ -1,0 +1,35 @@
+---
+source: tests/ir_tests.rs
+expression: json
+---
+{
+  "kind": "BackboneElement",
+  "properties": [
+    {
+      "name": "use",
+      "path": "HumanName.use",
+      "property_type": {
+        "kind": "Primitive",
+        "type_name": "code"
+      },
+      "cardinality": {
+        "min": 0,
+        "max": 1
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": true,
+      "binding": {
+        "strength": "Required",
+        "value_set": "http://hl7.org/fhir/ValueSet/name-use",
+        "description": "The use of a human name."
+      },
+      "constraints": [],
+      "short_description": "usual | official | temp | nickname | anonymous | old | maiden",
+      "definition": "Identifies the purpose for this name.",
+      "comments": null,
+      "examples": []
+    }
+  ]
+}

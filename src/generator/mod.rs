@@ -1,4 +1,9 @@
-//! Code generator functionality
-//!
-//! This module will contain the core generator traits and implementations.
-//! Implementation will be added in subsequent tasks.
+//! Code generation traits and utilities
+
+pub mod traits;
+
+pub use traits::{
+    CodeGenerator, FileType, GeneratedCode, GeneratedFile, GenerationManifest,
+    GenerationStatistics, GeneratorCapabilities, GeneratorConfig, GeneratorMetadata,
+    IdentifierContext, Language, LanguageBackend, TemplateContext, TemplateEngine,
+};

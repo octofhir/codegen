@@ -1,0 +1,57 @@
+---
+source: tests/ir_tests.rs
+expression: json
+---
+{
+  "resources": {
+    "Patient": {
+      "name": "Patient",
+      "base": "DomainResource",
+      "properties": [
+        {
+          "name": "birthDate",
+          "path": "Patient.birthDate",
+          "property_type": {
+            "kind": "Primitive",
+            "type_name": "date"
+          },
+          "cardinality": {
+            "min": 0,
+            "max": 1
+          },
+          "is_choice": false,
+          "choice_types": [],
+          "is_modifier": false,
+          "is_summary": true,
+          "binding": null,
+          "constraints": [],
+          "short_description": "The date of birth for the individual",
+          "definition": "The date of birth for the individual.",
+          "comments": null,
+          "examples": []
+        }
+      ],
+      "search_parameters": [],
+      "documentation": {
+        "short": "Information about an individual receiving health care services",
+        "definition": "Demographics and other administrative information about an individual receiving care or other health-related services.",
+        "comments": null,
+        "requirements": null,
+        "usage_notes": [],
+        "url": "http://hl7.org/fhir/StructureDefinition/Patient"
+      },
+      "url": "http://hl7.org/fhir/StructureDefinition/Patient",
+      "is_abstract": false
+    }
+  },
+  "datatypes": {},
+  "primitives": {},
+  "profiles": {},
+  "fhir_version": "R4",
+  "metadata": {
+    "generated_at": "2025-10-08T14:00:00+00:00",
+    "generator_version": "0.1.0",
+    "source_packages": [],
+    "custom": {}
+  }
+}

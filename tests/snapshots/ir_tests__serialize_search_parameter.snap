@@ -1,0 +1,11 @@
+---
+source: tests/ir_tests.rs
+expression: json
+---
+{
+  "code": "birthdate",
+  "param_type": "Date",
+  "description": "The patient's date of birth",
+  "expression": "Patient.birthDate",
+  "target_types": []
+}

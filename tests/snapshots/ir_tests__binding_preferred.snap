@@ -1,0 +1,9 @@
+---
+source: tests/ir_tests.rs
+expression: json
+---
+{
+  "strength": "Preferred",
+  "value_set": "http://example.org/ValueSet/test",
+  "description": "Test binding"
+}

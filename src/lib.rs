@@ -36,7 +36,8 @@ pub use crate::core::error::{Error, Result};
 
 /// Re-export commonly used types and traits
 pub mod prelude {
-    pub use crate::core::*;
     pub use crate::Error;
     pub use crate::Result;
+    pub use crate::core::*;
+    pub use crate::generator::*;
 }

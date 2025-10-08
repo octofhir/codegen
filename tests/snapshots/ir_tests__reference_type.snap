@@ -1,0 +1,11 @@
+---
+source: tests/ir_tests.rs
+expression: json
+---
+{
+  "kind": "Reference",
+  "target_types": [
+    "Patient",
+    "Practitioner"
+  ]
+}

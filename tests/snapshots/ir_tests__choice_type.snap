@@ -1,0 +1,11 @@
+---
+source: tests/ir_tests.rs
+expression: json
+---
+{
+  "kind": "Choice",
+  "types": [
+    "string",
+    "CodeableConcept"
+  ]
+}
