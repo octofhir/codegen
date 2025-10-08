@@ -1,0 +1,13 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+/**
+ * Type guard to check if a resource is a Patient
+ * 
+ * @param resource - The resource to check
+ * @returns True if the resource is a Patient
+ */
+export function isPatient(resource: Resource): resource is Patient {
+  return resource.resourceType === "Patient";
+}

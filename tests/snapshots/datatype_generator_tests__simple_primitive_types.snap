@@ -1,0 +1,35 @@
+---
+source: tests/datatype_generator_tests.rs
+expression: output
+---
+/**
+ * Simple FHIR primitive type aliases
+ * 
+ * Use these when you don't need extension support.
+ */
+/** Boolean value */
+export type boolean = boolean;
+/** 32-bit integer */
+export type integer = number;
+/** String value */
+export type string = string;
+/** Decimal number */
+export type decimal = number;
+/** URI/URL */
+export type uri = string;
+/** URL */
+export type url = string;
+/** Canonical URL */
+export type canonical = string;
+/** Code value */
+export type code = string;
+/** Element ID */
+export type id = string;
+/** Date (YYYY-MM-DD) */
+export type date = string;
+/** DateTime */
+export type dateTime = string;
+/** Instant in time */
+export type instant = string;
+/** Time */
+export type time = string;

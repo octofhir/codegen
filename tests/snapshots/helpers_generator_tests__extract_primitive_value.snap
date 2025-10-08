@@ -1,0 +1,17 @@
+---
+source: tests/helpers_generator_tests.rs
+expression: result
+---
+/**
+ * Extract primitive value from FhirPrimitive<T> wrapper
+ * 
+ * @param primitive - The FhirPrimitive<T> or undefined
+ * @returns The unwrapped value or undefined
+ */
+export function extractPrimitiveValue<T>(primitive: FhirPrimitive<T> | undefined): T | undefined {
+    if (primitive === undefined) return undefined;
+    if (typeof primitive === "object" && "value" in primitive) {
+        return primitive.value;
+    }
+    return primitive as T;
+}

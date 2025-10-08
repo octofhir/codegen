@@ -1,0 +1,19 @@
+---
+source: tests/datatype_generator_tests.rs
+expression: output
+---
+/**
+ * FHIR Primitive wrapper type
+ * 
+ * Wraps primitive values to support FHIR extensions and element properties.
+ * 
+ * @template T - The primitive value type
+ */
+export interface FhirPrimitive<T> {
+  /** The actual primitive value */
+  value?: T;
+  /** Unique id for inter-element referencing */
+  id?: string;
+  /** Additional content defined by implementations */
+  extension?: Extension[];
+}

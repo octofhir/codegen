@@ -1,0 +1,13 @@
+---
+source: tests/typescript_backend_tests.rs
+expression: "output.join(\"\\n\")"
+---
+/**
+ * Patient resource
+ *
+ * This is a longer definition that describes the patient resource in more detail.
+ *
+ * Additional comments here
+ *
+ * @see http://hl7.org/fhir/StructureDefinition/Patient
+ */

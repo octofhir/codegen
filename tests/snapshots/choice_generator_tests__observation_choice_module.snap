@@ -1,0 +1,114 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Choice element for Observation.value[x]
+ * 
+ * Actual result
+ */
+/**
+ * Choice type for value property
+ * 
+ * Actual result
+ */
+export type ObservationValueChoice =
+  | { valueQuantity: Quantity }
+  | { valueCodeableConcept: CodeableConcept }
+  | { valueString: string }
+  | { valueBoolean: boolean }
+  | { valueInteger: number }
+  | { valueRange: Range }
+  | { valueRatio: Ratio }
+  | { valueSampledData: SampledData }
+  | { valueTime: string }
+  | { valueDateTime: string }
+  | { valuePeriod: Period };
+
+/**
+ * Type guards for value choice element
+ */
+/**
+ * Check if choice has valueQuantity variant
+ */
+export function hasValueQuantity(obj: ObservationValueChoice): obj is { valueQuantity: Quantity } {
+  return 'valueQuantity' in obj;
+}
+/**
+ * Check if choice has valueCodeableConcept variant
+ */
+export function hasValueCodeableConcept(obj: ObservationValueChoice): obj is { valueCodeableConcept: CodeableConcept } {
+  return 'valueCodeableConcept' in obj;
+}
+/**
+ * Check if choice has valueString variant
+ */
+export function hasValueString(obj: ObservationValueChoice): obj is { valueString: string } {
+  return 'valueString' in obj;
+}
+/**
+ * Check if choice has valueBoolean variant
+ */
+export function hasValueBoolean(obj: ObservationValueChoice): obj is { valueBoolean: boolean } {
+  return 'valueBoolean' in obj;
+}
+/**
+ * Check if choice has valueInteger variant
+ */
+export function hasValueInteger(obj: ObservationValueChoice): obj is { valueInteger: number } {
+  return 'valueInteger' in obj;
+}
+/**
+ * Check if choice has valueRange variant
+ */
+export function hasValueRange(obj: ObservationValueChoice): obj is { valueRange: Range } {
+  return 'valueRange' in obj;
+}
+/**
+ * Check if choice has valueRatio variant
+ */
+export function hasValueRatio(obj: ObservationValueChoice): obj is { valueRatio: Ratio } {
+  return 'valueRatio' in obj;
+}
+/**
+ * Check if choice has valueSampledData variant
+ */
+export function hasValueSampledData(obj: ObservationValueChoice): obj is { valueSampledData: SampledData } {
+  return 'valueSampledData' in obj;
+}
+/**
+ * Check if choice has valueTime variant
+ */
+export function hasValueTime(obj: ObservationValueChoice): obj is { valueTime: string } {
+  return 'valueTime' in obj;
+}
+/**
+ * Check if choice has valueDateTime variant
+ */
+export function hasValueDateTime(obj: ObservationValueChoice): obj is { valueDateTime: string } {
+  return 'valueDateTime' in obj;
+}
+/**
+ * Check if choice has valuePeriod variant
+ */
+export function hasValuePeriod(obj: ObservationValueChoice): obj is { valuePeriod: Period } {
+  return 'valuePeriod' in obj;
+}
+
+/**
+ * Extract value from value choice
+ */
+export function getObservationValueChoiceValue(choice: ObservationValueChoice): Quantity | CodeableConcept | string | boolean | number | Range | Ratio | SampledData | string | string | Period {
+  if (hasValueQuantity(choice)) return choice.valueQuantity;
+  if (hasValueCodeableConcept(choice)) return choice.valueCodeableConcept;
+  if (hasValueString(choice)) return choice.valueString;
+  if (hasValueBoolean(choice)) return choice.valueBoolean;
+  if (hasValueInteger(choice)) return choice.valueInteger;
+  if (hasValueRange(choice)) return choice.valueRange;
+  if (hasValueRatio(choice)) return choice.valueRatio;
+  if (hasValueSampledData(choice)) return choice.valueSampledData;
+  if (hasValueTime(choice)) return choice.valueTime;
+  if (hasValueDateTime(choice)) return choice.valueDateTime;
+  if (hasValuePeriod(choice)) return choice.valuePeriod;
+  throw new Error('Invalid choice type');
+}

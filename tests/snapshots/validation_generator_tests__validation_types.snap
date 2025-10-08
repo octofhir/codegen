@@ -1,0 +1,26 @@
+---
+source: tests/validation_generator_tests.rs
+expression: result
+---
+/**
+ * Validation error details
+ */
+export interface ValidationError {
+    /** Path to the field that failed validation */
+    path: string;
+    /** Error message */
+    message: string;
+    /** Severity level */
+    severity: "error" | "warning" | "info";
+    /** FHIR constraint key (if applicable) */
+    constraint?: string;
+}
+/**
+ * Validation result
+ */
+export interface ValidationResult {
+    /** Whether the resource is valid (no errors) */
+    valid: boolean;
+    /** List of validation errors/warnings */
+    errors: ValidationError[];
+}

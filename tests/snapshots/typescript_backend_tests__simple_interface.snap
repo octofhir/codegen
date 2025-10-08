@@ -1,0 +1,8 @@
+---
+source: tests/typescript_backend_tests.rs
+expression: output
+---
+export interface SimpleInterface {
+  id?: string;
+  name: string;
+}

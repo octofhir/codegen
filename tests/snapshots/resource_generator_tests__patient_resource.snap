@@ -1,0 +1,23 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+/**
+ * Information about an individual or animal receiving care or other health-related services
+ * 
+ * Demographics and other administrative information about an individual or animal
+ * receiving care or other health-related services.
+ * 
+ * @see http://hl7.org/fhir/StructureDefinition/Patient
+ */
+export interface Patient extends DomainResource {
+  resourceType: "Patient";
+  identifier?: Identifier[];
+  active?: boolean;
+  name?: HumanName[];
+  telecom?: ContactPoint[];
+  gender?: string;
+  birthDate?: string;
+  deceased?: boolean | dateTime;
+  address?: Address[];
+}

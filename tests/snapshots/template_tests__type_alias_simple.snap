@@ -1,0 +1,5 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+export type Status = "active" | "inactive";

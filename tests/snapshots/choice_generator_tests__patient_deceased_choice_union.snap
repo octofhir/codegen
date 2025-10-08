@@ -1,0 +1,12 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Choice type for deceased property
+ * 
+ * Indicates if the individual is deceased or not
+ */
+export type PatientDeceasedChoice =
+  | { deceasedBoolean: boolean }
+  | { deceasedDateTime: string };

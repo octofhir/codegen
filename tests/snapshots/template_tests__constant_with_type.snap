@@ -1,0 +1,5 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+export const FHIR_VERSION: string = "4.0.1";

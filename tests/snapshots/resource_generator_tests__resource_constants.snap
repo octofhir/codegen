@@ -1,0 +1,16 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+/**
+ * FHIR Resource Type Constants
+ */
+export const RESOURCE_TYPE_OBSERVATION = "Observation" as const;
+export const RESOURCE_TYPE_PATIENT = "Patient" as const;
+/**
+ * Array of all FHIR resource types
+ */
+export const ALL_RESOURCE_TYPES = [
+  "Observation",
+  "Patient",
+] as const;

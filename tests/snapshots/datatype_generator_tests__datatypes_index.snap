@@ -1,0 +1,7 @@
+---
+source: tests/datatype_generator_tests.rs
+expression: output
+---
+export * from './Address';
+export * from './HumanName';
+export * from './Quantity';

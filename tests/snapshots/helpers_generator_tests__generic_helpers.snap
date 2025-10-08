@@ -1,0 +1,21 @@
+---
+source: tests/helpers_generator_tests.rs
+expression: result
+---
+/**
+ * Helper methods for Condition resource
+ */
+export namespace ConditionHelpers {
+    /**
+     * Get the resource ID if present
+     */
+    export function getId(resource: Condition): string | undefined {
+        return resource.id;
+    }
+    /**
+     * Get the resource meta if present
+     */
+    export function getMeta(resource: Condition): Meta | undefined {
+        return resource.meta;
+    }
+}

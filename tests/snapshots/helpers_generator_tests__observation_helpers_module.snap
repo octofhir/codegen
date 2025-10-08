@@ -1,0 +1,40 @@
+---
+source: tests/helpers_generator_tests.rs
+expression: result
+---
+/**
+ * Helper utilities for Observation resource
+ * 
+ * This file is auto-generated. Do not edit manually.
+ */
+import { Observation } from './observation';
+import { extractPrimitiveValue } from './utilities';
+/**
+ * Helper methods for Observation resource
+ */
+export namespace ObservationHelpers {
+    /**
+     * Get the observation value if present
+     */
+    export function getValue(observation: Observation): any | undefined {
+        // Handle different value[x] variants
+        if (observation.valueQuantity) return observation.valueQuantity;
+        if (observation.valueCodeableConcept) return observation.valueCodeableConcept;
+        if (observation.valueString) return observation.valueString;
+        if (observation.valueBoolean !== undefined) return observation.valueBoolean;
+        if (observation.valueInteger !== undefined) return observation.valueInteger;
+        if (observation.valueRange) return observation.valueRange;
+        if (observation.valueRatio) return observation.valueRatio;
+        if (observation.valueSampledData) return observation.valueSampledData;
+        if (observation.valueTime) return observation.valueTime;
+        if (observation.valueDateTime) return observation.valueDateTime;
+        if (observation.valuePeriod) return observation.valuePeriod;
+        return undefined;
+    }
+    /**
+     * Check if observation has a value
+     */
+    export function hasValue(observation: Observation): boolean {
+        return getValue(observation) !== undefined;
+    }
+}

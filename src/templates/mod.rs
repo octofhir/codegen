@@ -1,3 +1,5 @@
 //! Code generation templates
-//!
-//! Template engine integration will be added in Phase 2.
+
+pub mod genco_engine;
+
+pub use genco_engine::GencoTemplateEngine;

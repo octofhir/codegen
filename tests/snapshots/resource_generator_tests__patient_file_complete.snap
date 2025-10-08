@@ -1,0 +1,34 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+import { Address, ContactPoint, DomainResource, HumanName, Identifier } from './types';
+/**
+ * Information about an individual or animal receiving care or other health-related services
+ * 
+ * Demographics and other administrative information about an individual or animal
+ * receiving care or other health-related services.
+ * 
+ * @see http://hl7.org/fhir/StructureDefinition/Patient
+ */
+export interface Patient extends DomainResource {
+  resourceType: "Patient";
+  identifier?: Identifier[];
+  active?: boolean;
+  name?: HumanName[];
+  telecom?: ContactPoint[];
+  gender?: string;
+  birthDate?: string;
+  deceased?: boolean | dateTime;
+  address?: Address[];
+}
+
+/**
+ * Type guard to check if a resource is a Patient
+ * 
+ * @param resource - The resource to check
+ * @returns True if the resource is a Patient
+ */
+export function isPatient(resource: Resource): resource is Patient {
+  return resource.resourceType === "Patient";
+}

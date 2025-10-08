@@ -1,0 +1,8 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+{
+  id?: string;
+  value: number;
+}

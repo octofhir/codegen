@@ -1,0 +1,18 @@
+---
+source: tests/typescript_backend_tests.rs
+expression: output
+---
+/**
+ * Patient demographics and information
+ *
+ * Demographics and other administrative information about an individual or animal
+ * receiving care or other health-related services.
+ *
+ * @see http://hl7.org/fhir/StructureDefinition/Patient
+ */
+export interface Patient extends DomainResource {
+  resourceType: "Patient";
+  id?: id;
+  active?: boolean;
+  name?: HumanName[];
+}

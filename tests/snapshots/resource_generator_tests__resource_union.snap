@@ -1,0 +1,10 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+/**
+ * Union type of all FHIR resources
+ * 
+ * This type represents any valid FHIR resource.
+ */
+export type AnyResource = Patient | Observation;

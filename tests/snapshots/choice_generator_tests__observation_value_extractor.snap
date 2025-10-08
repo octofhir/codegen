@@ -1,0 +1,21 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Extract value from value choice
+ */
+export function getObservationValueChoiceValue(choice: ObservationValueChoice): Quantity | CodeableConcept | string | boolean | number | Range | Ratio | SampledData | string | string | Period {
+  if (hasValueQuantity(choice)) return choice.valueQuantity;
+  if (hasValueCodeableConcept(choice)) return choice.valueCodeableConcept;
+  if (hasValueString(choice)) return choice.valueString;
+  if (hasValueBoolean(choice)) return choice.valueBoolean;
+  if (hasValueInteger(choice)) return choice.valueInteger;
+  if (hasValueRange(choice)) return choice.valueRange;
+  if (hasValueRatio(choice)) return choice.valueRatio;
+  if (hasValueSampledData(choice)) return choice.valueSampledData;
+  if (hasValueTime(choice)) return choice.valueTime;
+  if (hasValueDateTime(choice)) return choice.valueDateTime;
+  if (hasValuePeriod(choice)) return choice.valuePeriod;
+  throw new Error('Invalid choice type');
+}

@@ -1,0 +1,24 @@
+---
+source: tests/datatype_generator_tests.rs
+expression: output
+---
+/**
+ * An address expressed using postal conventions (as opposed to GPS or other location definition formats)
+ * 
+ * An address expressed using postal conventions (as opposed to GPS or other
+ * location definition formats). This data type may be used to convey addresses for
+ * use in delivering mail as well as for visiting locations which might not be
+ * valid for mail delivery. There are a variety of postal address formats defined
+ * around the world.
+ * 
+ * @see http://hl7.org/fhir/StructureDefinition/Address
+ */
+export interface Address extends Element {
+  use?: string;
+  type?: string;
+  line?: string[];
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+}

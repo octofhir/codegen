@@ -1,0 +1,19 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Type guards for deceased choice element
+ */
+/**
+ * Check if choice has deceasedBoolean variant
+ */
+export function hasDeceasedBoolean(obj: PatientDeceasedChoice): obj is { deceasedBoolean: boolean } {
+  return 'deceasedBoolean' in obj;
+}
+/**
+ * Check if choice has deceasedDateTime variant
+ */
+export function hasDeceasedDateTime(obj: PatientDeceasedChoice): obj is { deceasedDateTime: string } {
+  return 'deceasedDateTime' in obj;
+}

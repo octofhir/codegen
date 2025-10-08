@@ -1,0 +1,14 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+/**
+ * Name of a human
+ * 
+ * A human's name with the ability to identify parts and usage.
+ */
+export interface HumanName extends Element {
+  use?: string;
+  family?: string;
+  given?: string[];
+}

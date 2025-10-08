@@ -1,0 +1,5 @@
+---
+source: tests/typescript_backend_tests.rs
+expression: output
+---
+export type Status = "active" | "inactive";

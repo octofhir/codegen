@@ -1,0 +1,30 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+/**
+ * Type guard functions for FHIR resources
+ * 
+ * These functions allow you to narrow resource types at runtime.
+ */
+import { Resource } from './Resource';
+import { Patient, Observation } from './types';
+/**
+ * Type guard to check if a resource is a Patient
+ * 
+ * @param resource - The resource to check
+ * @returns True if the resource is a Patient
+ */
+export function isPatient(resource: Resource): resource is Patient {
+  return resource.resourceType === "Patient";
+}
+
+/**
+ * Type guard to check if a resource is a Observation
+ * 
+ * @param resource - The resource to check
+ * @returns True if the resource is a Observation
+ */
+export function isObservation(resource: Resource): resource is Observation {
+  return resource.resourceType === "Observation";
+}

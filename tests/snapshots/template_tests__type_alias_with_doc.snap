@@ -1,0 +1,10 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+/**
+ * Patient gender
+ * 
+ * Administrative gender code
+ */
+export type AdministrativeGender = "male" | "female" | "other" | "unknown";

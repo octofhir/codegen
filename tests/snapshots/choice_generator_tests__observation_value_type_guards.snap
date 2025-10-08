@@ -1,0 +1,73 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Type guards for value choice element
+ */
+/**
+ * Check if choice has valueQuantity variant
+ */
+export function hasValueQuantity(obj: ObservationValueChoice): obj is { valueQuantity: Quantity } {
+  return 'valueQuantity' in obj;
+}
+/**
+ * Check if choice has valueCodeableConcept variant
+ */
+export function hasValueCodeableConcept(obj: ObservationValueChoice): obj is { valueCodeableConcept: CodeableConcept } {
+  return 'valueCodeableConcept' in obj;
+}
+/**
+ * Check if choice has valueString variant
+ */
+export function hasValueString(obj: ObservationValueChoice): obj is { valueString: string } {
+  return 'valueString' in obj;
+}
+/**
+ * Check if choice has valueBoolean variant
+ */
+export function hasValueBoolean(obj: ObservationValueChoice): obj is { valueBoolean: boolean } {
+  return 'valueBoolean' in obj;
+}
+/**
+ * Check if choice has valueInteger variant
+ */
+export function hasValueInteger(obj: ObservationValueChoice): obj is { valueInteger: number } {
+  return 'valueInteger' in obj;
+}
+/**
+ * Check if choice has valueRange variant
+ */
+export function hasValueRange(obj: ObservationValueChoice): obj is { valueRange: Range } {
+  return 'valueRange' in obj;
+}
+/**
+ * Check if choice has valueRatio variant
+ */
+export function hasValueRatio(obj: ObservationValueChoice): obj is { valueRatio: Ratio } {
+  return 'valueRatio' in obj;
+}
+/**
+ * Check if choice has valueSampledData variant
+ */
+export function hasValueSampledData(obj: ObservationValueChoice): obj is { valueSampledData: SampledData } {
+  return 'valueSampledData' in obj;
+}
+/**
+ * Check if choice has valueTime variant
+ */
+export function hasValueTime(obj: ObservationValueChoice): obj is { valueTime: string } {
+  return 'valueTime' in obj;
+}
+/**
+ * Check if choice has valueDateTime variant
+ */
+export function hasValueDateTime(obj: ObservationValueChoice): obj is { valueDateTime: string } {
+  return 'valueDateTime' in obj;
+}
+/**
+ * Check if choice has valuePeriod variant
+ */
+export function hasValuePeriod(obj: ObservationValueChoice): obj is { valuePeriod: Period } {
+  return 'valuePeriod' in obj;
+}

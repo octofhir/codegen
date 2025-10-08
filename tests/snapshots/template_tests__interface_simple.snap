@@ -1,0 +1,8 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+export interface User {
+  id?: string;
+  name: string;
+}

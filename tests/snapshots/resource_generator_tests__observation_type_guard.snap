@@ -1,0 +1,13 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+/**
+ * Type guard to check if a resource is a Observation
+ * 
+ * @param resource - The resource to check
+ * @returns True if the resource is a Observation
+ */
+export function isObservation(resource: Resource): resource is Observation {
+  return resource.resourceType === "Observation";
+}

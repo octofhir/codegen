@@ -1,0 +1,11 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Enum for deceased choice variants
+ */
+export const PatientDeceasedType = {
+  BOOLEAN: 'deceasedBoolean',
+  DATE_TIME: 'deceasedDateTime',
+} as const;

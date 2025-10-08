@@ -1,0 +1,20 @@
+---
+source: tests/datatype_generator_tests.rs
+expression: output
+---
+/**
+ * A measured or measurable amount
+ * 
+ * A measured amount (or an amount that can potentially be measured). Note that
+ * measured amounts include amounts that are not precisely quantified, including
+ * amounts involving arbitrary units and floating currencies.
+ * 
+ * @see http://hl7.org/fhir/StructureDefinition/Quantity
+ */
+export interface Quantity extends Element {
+  value?: number;
+  comparator?: string;
+  unit?: string;
+  system?: string;
+  code?: string;
+}

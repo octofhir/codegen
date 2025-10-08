@@ -1,0 +1,11 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+/**
+ * Patient resource
+ * 
+ * Contains demographic and administrative information
+ * 
+ * @see http://hl7.org/fhir/StructureDefinition/Patient
+ */

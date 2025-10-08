@@ -155,11 +155,8 @@ impl TypeGraphBuilder {
         }
 
         // Extract pattern from elements if available
-        let pattern = parsed
-            .elements
-            .iter()
-            .find(|e| e.path == format!("{}.value", parsed.name))
-            .and(
+        let pattern =
+            parsed.elements.iter().find(|e| e.path == format!("{}.value", parsed.name)).and(
                 // Try to get pattern from element
                 // This is a simplified version - real implementation would parse constraints
                 None,
@@ -261,7 +258,10 @@ impl TypeGraphBuilder {
             "uri" => SearchParamType::Uri,
             "special" => SearchParamType::Special,
             _ => {
-                return Err(Error::Parser(format!("Unknown search parameter type: {}", param_type)));
+                return Err(Error::Parser(format!(
+                    "Unknown search parameter type: {}",
+                    param_type
+                )));
             }
         };
 

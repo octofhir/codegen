@@ -1,0 +1,10 @@
+---
+source: tests/typescript_backend_tests.rs
+expression: output
+---
+/**
+ * Patient gender
+ *
+ * Administrative gender - male | female | other | unknown
+ */
+export type PatientGender = "male" | "female" | "other" | "unknown";

@@ -1,0 +1,55 @@
+---
+source: tests/helpers_generator_tests.rs
+expression: result
+---
+/**
+ * Helper utilities for Patient resource
+ * 
+ * This file is auto-generated. Do not edit manually.
+ */
+import { Patient } from './patient';
+import { HumanName } from './humanName';
+import { extractPrimitiveValue } from './utilities';
+/**
+ * Helper methods for Patient resource
+ */
+export namespace PatientHelpers {
+    /**
+     * Get official name if available
+     */
+    export function getOfficialName(patient: Patient): HumanName | undefined {
+        return patient.name?.find(n => n.use === "official");
+    }
+    /**
+     * Get formatted full name
+     */
+    export function getFullName(patient: Patient): string | undefined {
+        const name = getOfficialName(patient) ?? patient.name?.[0];
+        if (!name) return undefined;
+        return [name.prefix?.join(" "), name.given?.join(" "), name.family]
+            .filter(Boolean)
+            .join(" ");
+    }
+    /**
+     * Check if patient is deceased
+     */
+    export function isDeceased(patient: Patient): boolean {
+        if (typeof patient.deceased === "boolean") {
+            return patient.deceased;
+        }
+        return patient.deceased !== undefined;
+    }
+    /**
+     * Get age in years (requires birthDate)
+     */
+    export function getAge(patient: Patient, asOf: Date = new Date()): number | undefined {
+        if (!patient.birthDate) return undefined;
+        const birth = new Date(extractPrimitiveValue(patient.birthDate) as string);
+        let age = asOf.getFullYear() - birth.getFullYear();
+        const monthDiff = asOf.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && asOf.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    }
+}

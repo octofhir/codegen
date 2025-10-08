@@ -1,0 +1,5 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+{ deceasedBoolean: boolean } | { deceasedDateTime: string }

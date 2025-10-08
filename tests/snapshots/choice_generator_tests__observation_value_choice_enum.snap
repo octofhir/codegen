@@ -1,0 +1,20 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Enum for value choice variants
+ */
+export const ObservationValueType = {
+  QUANTITY: 'valueQuantity',
+  CODEABLE_CONCEPT: 'valueCodeableConcept',
+  STRING: 'valueString',
+  BOOLEAN: 'valueBoolean',
+  INTEGER: 'valueInteger',
+  RANGE: 'valueRange',
+  RATIO: 'valueRatio',
+  SAMPLED_DATA: 'valueSampledData',
+  TIME: 'valueTime',
+  DATE_TIME: 'valueDateTime',
+  PERIOD: 'valuePeriod',
+} as const;

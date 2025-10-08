@@ -1,0 +1,12 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+/**
+ * Patient resource
+ */
+export interface Patient extends DomainResource {
+  resourceType: "Patient";
+  id?: string;
+  active?: boolean;
+}

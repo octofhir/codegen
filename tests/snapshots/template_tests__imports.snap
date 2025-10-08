@@ -1,0 +1,6 @@
+---
+source: tests/template_tests.rs
+expression: output
+---
+import { Patient, Observation } from './resources';
+import { HumanName, Address } from './datatypes';

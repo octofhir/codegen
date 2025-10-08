@@ -1,0 +1,21 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Choice type for value property
+ * 
+ * Actual result
+ */
+export type ObservationValueChoice =
+  | { valueQuantity: Quantity }
+  | { valueCodeableConcept: CodeableConcept }
+  | { valueString: string }
+  | { valueBoolean: boolean }
+  | { valueInteger: number }
+  | { valueRange: Range }
+  | { valueRatio: Ratio }
+  | { valueSampledData: SampledData }
+  | { valueTime: string }
+  | { valueDateTime: string }
+  | { valuePeriod: Period };

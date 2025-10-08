@@ -1,0 +1,42 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Choice element for MedicationRequest.dose[x]
+ * 
+ * Amount of medication per dose
+ */
+/**
+ * Choice type for dose property
+ * 
+ * Amount of medication per dose
+ */
+export type MedicationRequestDoseChoice =
+  | { doseRange: Range }
+  | { doseQuantity: Quantity };
+
+/**
+ * Type guards for dose choice element
+ */
+/**
+ * Check if choice has doseRange variant
+ */
+export function hasDoseRange(obj: MedicationRequestDoseChoice): obj is { doseRange: Range } {
+  return 'doseRange' in obj;
+}
+/**
+ * Check if choice has doseQuantity variant
+ */
+export function hasDoseQuantity(obj: MedicationRequestDoseChoice): obj is { doseQuantity: Quantity } {
+  return 'doseQuantity' in obj;
+}
+
+/**
+ * Extract value from dose choice
+ */
+export function getMedicationRequestDoseChoiceValue(choice: MedicationRequestDoseChoice): Range | Quantity {
+  if (hasDoseRange(choice)) return choice.doseRange;
+  if (hasDoseQuantity(choice)) return choice.doseQuantity;
+  throw new Error('Invalid choice type');
+}

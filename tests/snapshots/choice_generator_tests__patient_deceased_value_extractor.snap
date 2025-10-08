@@ -1,0 +1,12 @@
+---
+source: tests/choice_generator_tests.rs
+expression: output
+---
+/**
+ * Extract value from deceased choice
+ */
+export function getPatientDeceasedChoiceValue(choice: PatientDeceasedChoice): boolean | string {
+  if (hasDeceasedBoolean(choice)) return choice.deceasedBoolean;
+  if (hasDeceasedDateTime(choice)) return choice.deceasedDateTime;
+  throw new Error('Invalid choice type');
+}

@@ -1,0 +1,20 @@
+---
+source: tests/resource_generator_tests.rs
+expression: output
+---
+/**
+ * Measurements and simple assertions
+ * 
+ * Measurements and simple assertions made about a patient, device or other
+ * subject.
+ * 
+ * @see http://hl7.org/fhir/StructureDefinition/Observation
+ */
+export interface Observation extends DomainResource {
+  resourceType: "Observation";
+  identifier?: Identifier[];
+  status: string;
+  code: CodeableConcept;
+  subject?: Reference<Patient | Group | Device | Location>;
+  value?: Quantity | CodeableConcept | string | boolean | integer | Range;
+}

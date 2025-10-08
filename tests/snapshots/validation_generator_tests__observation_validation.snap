@@ -1,0 +1,41 @@
+---
+source: tests/validation_generator_tests.rs
+expression: result
+---
+/**
+ * Validate a Observation resource
+ * 
+ * @param resource - The Observation to validate
+ * @returns Validation result with any errors
+ */
+export function validateObservation(resource: Observation): ValidationResult {
+    const errors: ValidationError[] = [];
+    // Validate resourceType
+    if (resource.resourceType !== "Observation") {
+        errors.push({
+            path: "Observation.resourceType",
+            message: `Invalid resourceType: ${resource.resourceType}. Expected 'Observation'`,
+            severity: "error"
+        });
+    }
+    // Check required field: status
+    if (!resource.status) {
+        errors.push({
+            path: "Observation.status",
+            message: "Required field 'status' is missing",
+            severity: "error"
+        });
+    }
+    // Check required field: code
+    if (!resource.code) {
+        errors.push({
+            path: "Observation.code",
+            message: "Required field 'code' is missing",
+            severity: "error"
+        });
+    }
+    return {
+        valid: errors.filter(e => e.severity === "error").length === 0,
+        errors
+    };
+}

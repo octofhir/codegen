@@ -1,0 +1,40 @@
+---
+source: tests/validation_generator_tests.rs
+expression: result
+---
+/**
+ * Validation functions for Patient resource
+ * 
+ * This file is auto-generated. Do not edit manually.
+ */
+import { Patient } from './patient';
+import { ValidationResult, ValidationError } from './validation';
+/**
+ * Validate a Patient resource
+ * 
+ * @param resource - The Patient to validate
+ * @returns Validation result with any errors
+ */
+export function validatePatient(resource: Patient): ValidationResult {
+    const errors: ValidationError[] = [];
+    // Validate resourceType
+    if (resource.resourceType !== "Patient") {
+        errors.push({
+            path: "Patient.resourceType",
+            message: `Invalid resourceType: ${resource.resourceType}. Expected 'Patient'`,
+            severity: "error"
+        });
+    }
+    // Check required field: active
+    if (!resource.active) {
+        errors.push({
+            path: "Patient.active",
+            message: "Required field 'active' is missing",
+            severity: "error"
+        });
+    }
+    return {
+        valid: errors.filter(e => e.severity === "error").length === 0,
+        errors
+    };
+}
