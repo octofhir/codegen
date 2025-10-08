@@ -1,0 +1,65 @@
+[package]
+name = "octofhir-codegen"
+version = "0.1.0"
+edition = "2021"
+authors = ["OctoFHIR Team <funyloony@gmail.com>"]
+license = "MIT OR Apache-2.0"
+description = "Generate type-safe FHIR SDKs for multiple languages"
+repository = "https://github.com/octofhir/codegen"
+keywords = ["fhir", "healthcare", "codegen", "sdk", "generator"]
+categories = ["command-line-utilities", "development-tools"]
+
+[lib]
+name = "octofhir_codegen"
+path = "src/lib.rs"
+
+[[bin]]
+name = "octofhir-codegen"
+path = "src/main.rs"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+async-trait = "0.1"
+
+# Canonical manager integration
+octofhir-canonical-manager = { version = "0.1", path = "../canonical-manager" }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.9"
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# CLI
+clap = { version = "4.0", features = ["derive", "cargo"] }
+colored = "3.0"
+indicatif = "0.17"
+
+# Template engine
+genco = "0.17"
+
+# Code generation utilities
+heck = "0.5"
+indexmap = "2.0"
+petgraph = "0.6"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# File system
+walkdir = "2.0"
+tempfile = "3.0"
+
+[dev-dependencies]
+tokio-test = "0.4"
+insta = { version = "1.34", features = ["json", "yaml"] }
+criterion = "0.5"
+
+[features]
+default = []
+cli = []
