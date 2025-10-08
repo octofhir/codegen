@@ -1,0 +1,207 @@
+---
+source: tests/parser_tests.rs
+expression: resource_type
+---
+{
+  "name": "Patient",
+  "base": null,
+  "properties": [
+    {
+      "name": "active",
+      "path": "Patient.active",
+      "property_type": {
+        "kind": "Primitive",
+        "type_name": "boolean"
+      },
+      "cardinality": {
+        "min": 0,
+        "max": 1
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "Whether this patient record is in active use",
+      "definition": "Whether this patient's record is in active use",
+      "comments": null,
+      "examples": []
+    },
+    {
+      "name": "name",
+      "path": "Patient.name",
+      "property_type": {
+        "kind": "Complex",
+        "type_name": "HumanName"
+      },
+      "cardinality": {
+        "min": 0,
+        "max": null
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "A name associated with the patient",
+      "definition": "A name associated with the individual",
+      "comments": null,
+      "examples": []
+    },
+    {
+      "name": "gender",
+      "path": "Patient.gender",
+      "property_type": {
+        "kind": "Primitive",
+        "type_name": "code"
+      },
+      "cardinality": {
+        "min": 0,
+        "max": 1
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "male | female | other | unknown",
+      "definition": "Administrative gender - the gender that the patient is considered to have for administration and record keeping purposes",
+      "comments": null,
+      "examples": []
+    },
+    {
+      "name": "birthDate",
+      "path": "Patient.birthDate",
+      "property_type": {
+        "kind": "Primitive",
+        "type_name": "date"
+      },
+      "cardinality": {
+        "min": 0,
+        "max": 1
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "The date of birth for the individual",
+      "definition": "The date of birth for the individual",
+      "comments": null,
+      "examples": []
+    },
+    {
+      "name": "deceased",
+      "path": "Patient.deceased[x]",
+      "property_type": {
+        "kind": "Choice",
+        "types": [
+          "boolean",
+          "dateTime"
+        ]
+      },
+      "cardinality": {
+        "min": 0,
+        "max": 1
+      },
+      "is_choice": true,
+      "choice_types": [
+        "boolean",
+        "dateTime"
+      ],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "Indicates if the individual is deceased or not",
+      "definition": "Indicates if the individual is deceased or not",
+      "comments": null,
+      "examples": []
+    },
+    {
+      "name": "address",
+      "path": "Patient.address",
+      "property_type": {
+        "kind": "Complex",
+        "type_name": "Address"
+      },
+      "cardinality": {
+        "min": 0,
+        "max": null
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "An address for the individual",
+      "definition": "An address for the individual",
+      "comments": null,
+      "examples": []
+    },
+    {
+      "name": "contact",
+      "path": "Patient.contact",
+      "property_type": {
+        "kind": "BackboneElement",
+        "properties": []
+      },
+      "cardinality": {
+        "min": 0,
+        "max": null
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "A contact party (e.g. guardian, partner, friend) for the patient",
+      "definition": "A contact party (e.g. guardian, partner, friend) for the patient",
+      "comments": null,
+      "examples": []
+    },
+    {
+      "name": "generalPractitioner",
+      "path": "Patient.generalPractitioner",
+      "property_type": {
+        "kind": "Reference",
+        "target_types": [
+          "Practitioner",
+          "Organization",
+          "PractitionerRole"
+        ]
+      },
+      "cardinality": {
+        "min": 0,
+        "max": null
+      },
+      "is_choice": false,
+      "choice_types": [],
+      "is_modifier": false,
+      "is_summary": false,
+      "binding": null,
+      "constraints": [],
+      "short_description": "Patient's nominated primary care provider",
+      "definition": "Patient's nominated care provider",
+      "comments": null,
+      "examples": []
+    }
+  ],
+  "search_parameters": [],
+  "documentation": {
+    "short": "FHIR Patient Resource",
+    "definition": "",
+    "comments": null,
+    "requirements": null,
+    "usage_notes": [],
+    "url": "http://hl7.org/fhir/StructureDefinition/Patient"
+  },
+  "url": "http://hl7.org/fhir/StructureDefinition/Patient",
+  "is_abstract": false
+}

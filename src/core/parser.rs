@@ -3,22 +3,55 @@
 //! Converts FHIR StructureDefinition JSON into IR types
 
 use crate::core::ir::*;
+use crate::core::resolver::SchemaResolver;
 use crate::core::{Error, Result};
 use serde_json::Value;
 use std::collections::HashMap;
-use tracing::{debug, warn};
+use std::sync::Arc;
+use tracing::debug;
 
 /// Parser for FHIR StructureDefinitions
 pub struct StructureDefinitionParser {
     /// Cache of parsed structures
     cache: HashMap<String, ParsedStructure>,
+
+    /// Schema resolver for type lookups
+    resolver: Option<Arc<SchemaResolver>>,
 }
 
 impl StructureDefinitionParser {
     /// Create a new parser
     pub fn new() -> Self {
-        Self {
-            cache: HashMap::new(),
+        Self { cache: HashMap::new(), resolver: None }
+    }
+
+    /// Create parser with schema resolver
+    pub fn with_resolver(resolver: Arc<SchemaResolver>) -> Self {
+        Self { cache: HashMap::new(), resolver: Some(resolver) }
+    }
+
+    /// Set schema resolver
+    pub fn set_resolver(&mut self, resolver: Arc<SchemaResolver>) {
+        self.resolver = Some(resolver);
+    }
+
+    /// Resolve base type if resolver is available
+    #[allow(dead_code)]
+    async fn resolve_base_if_needed(&self, base_url: &str) -> Result<Option<Value>> {
+        if let Some(resolver) = &self.resolver {
+            resolver.resolve_base_type(base_url).await
+        } else {
+            Ok(None)
+        }
+    }
+
+    /// Check if type is primitive using resolver
+    #[allow(dead_code)]
+    async fn is_primitive_resolved(&self, type_code: &str) -> Result<bool> {
+        if let Some(resolver) = &self.resolver {
+            resolver.is_primitive_type(type_code).await
+        } else {
+            Ok(Self::is_primitive(type_code))
         }
     }
 
@@ -73,15 +106,9 @@ impl StructureDefinitionParser {
             }
         };
 
-        let base_definition = json
-            .get("baseDefinition")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        let base_definition = json.get("baseDefinition").and_then(|v| v.as_str()).map(String::from);
 
-        let is_abstract = json
-            .get("abstract")
-            .and_then(|v| v.as_bool())
-            .unwrap_or(false);
+        let is_abstract = json.get("abstract").and_then(|v| v.as_bool()).unwrap_or(false);
 
         // Check if we have snapshot or differential
         let snapshot = json.get("snapshot");
@@ -94,9 +121,7 @@ impl StructureDefinitionParser {
             let elements = self.parse_element_definitions(diff)?;
             (elements, true)
         } else {
-            return Err(Error::Parser(
-                "Missing both snapshot and differential".to_string(),
-            ));
+            return Err(Error::Parser("Missing both snapshot and differential".to_string()));
         };
 
         debug!(
@@ -129,10 +154,7 @@ impl StructureDefinitionParser {
             .and_then(|v| v.as_array())
             .ok_or_else(|| Error::Parser("Missing element array".to_string()))?;
 
-        elements
-            .iter()
-            .map(|elem| self.parse_element(elem))
-            .collect()
+        elements.iter().map(|elem| self.parse_element(elem)).collect()
     }
 
     /// Parse a single element definition
@@ -145,15 +167,9 @@ impl StructureDefinitionParser {
 
         let short = elem.get("short").and_then(|v| v.as_str()).map(String::from);
 
-        let definition = elem
-            .get("definition")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        let definition = elem.get("definition").and_then(|v| v.as_str()).map(String::from);
 
-        let min = elem
-            .get("min")
-            .and_then(|v| v.as_u64())
-            .unwrap_or(0) as u32;
+        let min = elem.get("min").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
 
         let max = elem
             .get("max")
@@ -162,50 +178,30 @@ impl StructureDefinitionParser {
                 if s == "*" {
                     Cardinality::Unbounded
                 } else {
-                    s.parse::<u32>()
-                        .map(Cardinality::Finite)
-                        .unwrap_or(Cardinality::Finite(1))
+                    s.parse::<u32>().map(Cardinality::Finite).unwrap_or(Cardinality::Finite(1))
                 }
             })
             .unwrap_or(Cardinality::Finite(1));
 
         // Parse types
         let types = if let Some(type_array) = elem.get("type").and_then(|v| v.as_array()) {
-            type_array
-                .iter()
-                .filter_map(|t| self.parse_element_type(t).ok())
-                .collect()
+            type_array.iter().filter_map(|t| self.parse_element_type(t).ok()).collect()
         } else {
             vec![]
         };
 
         // Parse binding
-        let binding = elem
-            .get("binding")
-            .and_then(|b| self.parse_binding(b).ok());
+        let binding = elem.get("binding").and_then(|b| self.parse_binding(b).ok());
 
         // Parse constraints
-        let constraints = if let Some(constraint_array) =
-            elem.get("constraint").and_then(|v| v.as_array())
-        {
-            constraint_array
-                .iter()
-                .filter_map(|c| self.parse_constraint(c).ok())
-                .collect()
-        } else {
-            vec![]
-        };
+        let constraints =
+            if let Some(constraint_array) = elem.get("constraint").and_then(|v| v.as_array()) {
+                constraint_array.iter().filter_map(|c| self.parse_constraint(c).ok()).collect()
+            } else {
+                vec![]
+            };
 
-        Ok(ElementDefinition {
-            path,
-            short,
-            definition,
-            min,
-            max,
-            types,
-            binding,
-            constraints,
-        })
+        Ok(ElementDefinition { path, short, definition, min, max, types, binding, constraints })
     }
 
     /// Parse element type information
@@ -222,11 +218,9 @@ impl StructureDefinitionParser {
                 .get("targetProfile")
                 .and_then(|v| match v {
                     Value::String(s) => Some(vec![s.clone()]),
-                    Value::Array(arr) => Some(
-                        arr.iter()
-                            .filter_map(|v| v.as_str().map(String::from))
-                            .collect(),
-                    ),
+                    Value::Array(arr) => {
+                        Some(arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                    }
                     _ => None,
                 })
                 .unwrap_or_default()
@@ -234,10 +228,7 @@ impl StructureDefinitionParser {
             vec![]
         };
 
-        Ok(ElementType {
-            code,
-            target_profiles,
-        })
+        Ok(ElementType { code, target_profiles })
     }
 
     /// Parse value set binding
@@ -247,21 +238,11 @@ impl StructureDefinitionParser {
             .and_then(|v| v.as_str())
             .ok_or_else(|| Error::Parser("Binding missing strength".to_string()))?;
 
-        let value_set = binding
-            .get("valueSet")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        let value_set = binding.get("valueSet").and_then(|v| v.as_str()).map(String::from);
 
-        let description = binding
-            .get("description")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        let description = binding.get("description").and_then(|v| v.as_str()).map(String::from);
 
-        Ok(Binding {
-            strength: strength.to_string(),
-            value_set,
-            description,
-        })
+        Ok(Binding { strength: strength.to_string(), value_set, description })
     }
 
     /// Parse constraint/invariant
@@ -272,11 +253,8 @@ impl StructureDefinitionParser {
             .ok_or_else(|| Error::Parser("Constraint missing key".to_string()))?
             .to_string();
 
-        let severity = constraint
-            .get("severity")
-            .and_then(|v| v.as_str())
-            .unwrap_or("error")
-            .to_string();
+        let severity =
+            constraint.get("severity").and_then(|v| v.as_str()).unwrap_or("error").to_string();
 
         let human = constraint
             .get("human")
@@ -284,32 +262,17 @@ impl StructureDefinitionParser {
             .ok_or_else(|| Error::Parser("Constraint missing human description".to_string()))?
             .to_string();
 
-        let expression = constraint
-            .get("expression")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        let expression = constraint.get("expression").and_then(|v| v.as_str()).map(String::from);
 
-        let xpath = constraint
-            .get("xpath")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        let xpath = constraint.get("xpath").and_then(|v| v.as_str()).map(String::from);
 
-        Ok(Constraint {
-            key,
-            severity,
-            human,
-            expression,
-            xpath,
-        })
+        Ok(Constraint { key, severity, human, expression, xpath })
     }
 
     /// Convert parsed structure to IR ResourceType
     pub fn to_resource_type(&self, parsed: &ParsedStructure) -> Result<ResourceType> {
         if parsed.kind != StructureKind::Resource {
-            return Err(Error::Parser(format!(
-                "{} is not a resource",
-                parsed.name
-            )));
+            return Err(Error::Parser(format!("{} is not a resource", parsed.name)));
         }
 
         // Convert elements to properties
@@ -336,10 +299,7 @@ impl StructureDefinitionParser {
     /// Convert parsed structure to IR DataType
     pub fn to_datatype(&self, parsed: &ParsedStructure) -> Result<DataType> {
         if parsed.kind != StructureKind::ComplexType {
-            return Err(Error::Parser(format!(
-                "{} is not a complex type",
-                parsed.name
-            )));
+            return Err(Error::Parser(format!("{} is not a complex type", parsed.name)));
         }
 
         let properties = self.elements_to_properties(&parsed.elements, &parsed.name)?;
@@ -393,11 +353,8 @@ impl StructureDefinitionParser {
 
             // Determine if this is a choice element
             let is_choice = name.ends_with("[x]");
-            let base_name = if is_choice {
-                name.trim_end_matches("[x]").to_string()
-            } else {
-                name.clone()
-            };
+            let base_name =
+                if is_choice { name.trim_end_matches("[x]").to_string() } else { name.clone() };
 
             // Get choice types if applicable
             let choice_types = if is_choice {
@@ -417,23 +374,17 @@ impl StructureDefinitionParser {
                         target_types: elem_type
                             .target_profiles
                             .iter()
-                            .filter_map(|url| url.split('/').last().map(String::from))
+                            .filter_map(|url| url.split('/').next_back().map(String::from))
                             .collect(),
                     }
                 } else if Self::is_primitive(&elem_type.code) {
-                    PropertyType::Primitive {
-                        type_name: elem_type.code.clone(),
-                    }
+                    PropertyType::Primitive { type_name: elem_type.code.clone() }
                 } else {
-                    PropertyType::Complex {
-                        type_name: elem_type.code.clone(),
-                    }
+                    PropertyType::Complex { type_name: elem_type.code.clone() }
                 }
             } else {
                 // Multiple types = choice
-                PropertyType::Choice {
-                    types: elem.types.iter().map(|t| t.code.clone()).collect(),
-                }
+                PropertyType::Choice { types: elem.types.iter().map(|t| t.code.clone()).collect() }
             };
 
             // Convert cardinality
@@ -452,9 +403,9 @@ impl StructureDefinitionParser {
                 cardinality,
                 is_choice,
                 choice_types,
-                is_modifier: false, // TODO: Extract from element
-                is_summary: false,  // TODO: Extract from element
-                binding: None,      // TODO: Convert binding
+                is_modifier: false,  // TODO: Extract from element
+                is_summary: false,   // TODO: Extract from element
+                binding: None,       // TODO: Convert binding
                 constraints: vec![], // TODO: Convert constraints
                 short_description: elem.short.clone().unwrap_or_default(),
                 definition: elem.definition.clone().unwrap_or_default(),
@@ -504,66 +455,97 @@ impl Default for StructureDefinitionParser {
 /// Parsed structure (intermediate form before IR conversion)
 #[derive(Debug, Clone)]
 pub struct ParsedStructure {
+    /// Canonical URL
     pub url: String,
+    /// Structure name
     pub name: String,
+    /// Kind of structure
     pub kind: StructureKind,
+    /// Base definition URL (if derived from another structure)
     pub base_definition: Option<String>,
+    /// Whether this is an abstract structure
     pub is_abstract: bool,
+    /// Element definitions
     pub elements: Vec<ElementDefinition>,
+    /// Whether this is differential (true) or snapshot (false)
     pub differential: bool,
 }
 
 /// Structure kind
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum StructureKind {
+    /// FHIR Resource
     Resource,
+    /// Complex datatype
     ComplexType,
+    /// Primitive datatype
     PrimitiveType,
+    /// Logical model
     LogicalModel,
 }
 
 /// Element definition from StructureDefinition
 #[derive(Debug, Clone)]
 pub struct ElementDefinition {
+    /// Element path (e.g., "Patient.name")
     pub path: String,
+    /// Short description
     pub short: Option<String>,
+    /// Full definition
     pub definition: Option<String>,
+    /// Minimum cardinality
     pub min: u32,
+    /// Maximum cardinality
     pub max: Cardinality,
+    /// Allowed types for this element
     pub types: Vec<ElementType>,
+    /// Value set binding
     pub binding: Option<Binding>,
+    /// Constraints/invariants
     pub constraints: Vec<Constraint>,
 }
 
 /// Cardinality max value
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Cardinality {
+    /// Finite maximum
     Finite(u32),
+    /// Unbounded (*)
     Unbounded,
 }
 
 /// Element type information
 #[derive(Debug, Clone)]
 pub struct ElementType {
+    /// Type code (e.g., "string", "Reference")
     pub code: String,
+    /// Target profiles (for Reference types)
     pub target_profiles: Vec<String>,
 }
 
 /// Value set binding
 #[derive(Debug, Clone)]
 pub struct Binding {
+    /// Binding strength (required, extensible, preferred, example)
     pub strength: String,
+    /// Value set canonical URL
     pub value_set: Option<String>,
+    /// Binding description
     pub description: Option<String>,
 }
 
 /// Constraint/invariant
 #[derive(Debug, Clone)]
 pub struct Constraint {
+    /// Constraint key
     pub key: String,
+    /// Severity (error, warning)
     pub severity: String,
+    /// Human-readable description
     pub human: String,
+    /// FHIRPath expression
     pub expression: Option<String>,
+    /// XPath expression
     pub xpath: Option<String>,
 }
 

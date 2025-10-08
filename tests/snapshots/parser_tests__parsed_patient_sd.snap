@@ -1,0 +1,77 @@
+---
+source: tests/parser_tests.rs
+expression: snapshot_data
+---
+{
+  "differential": false,
+  "element_count": 9,
+  "elements": [
+    {
+      "max": "Unbounded",
+      "min": 0,
+      "path": "Patient",
+      "short": "Information about an individual receiving health care services",
+      "type_count": 0
+    },
+    {
+      "max": "Finite(1)",
+      "min": 0,
+      "path": "Patient.active",
+      "short": "Whether this patient record is in active use",
+      "type_count": 1
+    },
+    {
+      "max": "Unbounded",
+      "min": 0,
+      "path": "Patient.name",
+      "short": "A name associated with the patient",
+      "type_count": 1
+    },
+    {
+      "max": "Finite(1)",
+      "min": 0,
+      "path": "Patient.gender",
+      "short": "male | female | other | unknown",
+      "type_count": 1
+    },
+    {
+      "max": "Finite(1)",
+      "min": 0,
+      "path": "Patient.birthDate",
+      "short": "The date of birth for the individual",
+      "type_count": 1
+    },
+    {
+      "max": "Finite(1)",
+      "min": 0,
+      "path": "Patient.deceased[x]",
+      "short": "Indicates if the individual is deceased or not",
+      "type_count": 2
+    },
+    {
+      "max": "Unbounded",
+      "min": 0,
+      "path": "Patient.address",
+      "short": "An address for the individual",
+      "type_count": 1
+    },
+    {
+      "max": "Unbounded",
+      "min": 0,
+      "path": "Patient.contact",
+      "short": "A contact party (e.g. guardian, partner, friend) for the patient",
+      "type_count": 0
+    },
+    {
+      "max": "Unbounded",
+      "min": 0,
+      "path": "Patient.generalPractitioner",
+      "short": "Patient's nominated primary care provider",
+      "type_count": 1
+    }
+  ],
+  "is_abstract": false,
+  "kind": "Resource",
+  "name": "Patient",
+  "url": "http://hl7.org/fhir/StructureDefinition/Patient"
+}
