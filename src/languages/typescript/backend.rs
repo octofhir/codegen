@@ -23,6 +23,15 @@ impl TypeScriptBackend {
     pub fn with_version(version: String) -> Self {
         Self { target_version: version }
     }
+
+    /// Sanitize name to be a valid TypeScript identifier
+    ///
+    /// Handles hyphens, spaces, and other invalid characters
+    pub fn sanitize_identifier(name: &str) -> String {
+        // Replace hyphens and spaces with underscores for now
+        // Later we could convert to PascalCase properly
+        name.replace('-', "_").replace(' ', "_").replace('.', "_")
+    }
 }
 
 impl Default for TypeScriptBackend {
@@ -40,14 +49,31 @@ impl LanguageBackend for TypeScriptBackend {
                 if target_types.is_empty() {
                     "Reference".to_string()
                 } else if target_types.len() == 1 {
-                    format!("Reference<{}>", target_types[0])
+                    format!("Reference<\"{}\">", target_types[0])
                 } else {
-                    let types = target_types.join(" | ");
+                    // Use string literal union types: Reference<"Patient" | "Group">
+                    let types = target_types
+                        .iter()
+                        .map(|t| format!("\"{}\"", t))
+                        .collect::<Vec<_>>()
+                        .join(" | ");
                     format!("Reference<{}>", types)
                 }
             }
             PropertyType::BackboneElement { .. } => "BackboneElement".to_string(),
-            PropertyType::Choice { types } => types.join(" | "),
+            PropertyType::Choice { types } => {
+                // Map each choice type (primitives to TS types, complex types as-is)
+                let mapped: Vec<String> = types
+                    .iter()
+                    .map(|t| {
+                        // Check if it's a primitive by trying to map it
+                        let mapped = Self::map_primitive_type(t);
+                        // If mapping didn't change it (not a primitive), use as-is
+                        if mapped == *t { t.clone() } else { mapped }
+                    })
+                    .collect();
+                mapped.join(" | ")
+            }
         }
     }
 

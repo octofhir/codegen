@@ -1,28 +1,44 @@
-//! TypeScript resource interface generation
+//! TypeScript resource generation (interfaces or classes)
 
 use crate::core::Result;
 use crate::core::ir::{ResourceType, TypeGraph};
 use crate::generator::LanguageBackend;
+use crate::languages::typescript::backend::TypeScriptBackend;
+use crate::languages::typescript::class_generator::ClassGenerator;
 use crate::languages::typescript::templates::TypeScriptTemplates;
 use crate::templates::genco_engine::{GencoTemplateEngine, helpers};
 use genco::prelude::*;
 use std::collections::HashSet;
 
-/// Generator for TypeScript resource interfaces
+/// Generator for TypeScript resource interfaces or classes
 pub struct ResourceGenerator<B: LanguageBackend> {
     /// Language backend for type mapping
     backend: B,
+    /// Generate classes instead of interfaces
+    use_classes: bool,
 }
 
 impl<B: LanguageBackend> ResourceGenerator<B> {
     /// Create a new resource generator
     pub fn new(backend: B) -> Self {
-        Self { backend }
+        Self {
+            backend,
+            use_classes: false, // Default to interfaces for backward compatibility
+        }
     }
 
-    /// Generate TypeScript interface for a single resource
+    /// Create a new resource generator with class generation enabled
+    pub fn new_with_classes(backend: B) -> Self {
+        Self { backend, use_classes: true }
+    }
+
+    /// Generate TypeScript code for a single resource (interface or class)
     pub fn generate_resource(&self, resource: &ResourceType) -> Result<String> {
-        TypeScriptTemplates::resource_to_interface(resource, &self.backend)
+        if self.use_classes {
+            ClassGenerator::generate_resource_class(resource, &self.backend)
+        } else {
+            TypeScriptTemplates::resource_to_interface(resource, &self.backend)
+        }
     }
 
     /// Generate TypeScript interfaces for all resources in a type graph
@@ -48,6 +64,9 @@ impl<B: LanguageBackend> ResourceGenerator<B> {
     pub fn generate_type_guard(&self, resource_name: &str) -> Result<String> {
         let mut tokens = js::Tokens::new();
 
+        // Sanitize name for valid TypeScript identifier
+        let sanitized_name = TypeScriptBackend::sanitize_identifier(resource_name);
+
         // JSDoc comment
         let doc = vec![
             format!("Type guard to check if a resource is a {}", resource_name),
@@ -61,13 +80,13 @@ impl<B: LanguageBackend> ResourceGenerator<B> {
 
         // Function signature
         tokens.append("export function is");
-        tokens.append(resource_name);
+        tokens.append(&sanitized_name);
         tokens.append("(resource: Resource): resource is ");
-        tokens.append(resource_name);
+        tokens.append(&sanitized_name);
         tokens.append(" {");
         tokens.push();
 
-        // Function body
+        // Function body (use original name for runtime check)
         tokens.append("  return resource.resourceType === \"");
         tokens.append(resource_name);
         tokens.append("\";");
@@ -163,10 +182,32 @@ impl<B: LanguageBackend> ResourceGenerator<B> {
         let mut deps = HashSet::new();
 
         for property in &resource.properties {
-            if let Some(type_name) = property.property_type.type_name() {
-                // Skip primitives
-                if !Self::is_primitive(type_name) {
+            // Collect types based on property type variant
+            match &property.property_type {
+                crate::core::ir::PropertyType::Primitive { type_name } => {
+                    if !Self::is_primitive(type_name) {
+                        deps.insert(type_name.to_string());
+                    }
+                }
+                crate::core::ir::PropertyType::Complex { type_name } => {
                     deps.insert(type_name.to_string());
+                }
+                crate::core::ir::PropertyType::Reference { .. } => {
+                    // Add Reference itself
+                    deps.insert("Reference".to_string());
+                    // Note: We don't add target types as dependencies because we use
+                    // string literal unions (Reference<"Patient" | "Group">), not actual types
+                }
+                crate::core::ir::PropertyType::Choice { types } => {
+                    // Add all choice types
+                    for choice_type in types {
+                        if !Self::is_primitive(choice_type) {
+                            deps.insert(choice_type.to_string());
+                        }
+                    }
+                }
+                crate::core::ir::PropertyType::BackboneElement { .. } => {
+                    deps.insert("BackboneElement".to_string());
                 }
             }
         }
@@ -215,12 +256,12 @@ impl<B: LanguageBackend> ResourceGenerator<B> {
     ) -> Result<String> {
         let mut tokens = js::Tokens::new();
 
-        // Generate imports
+        // Generate imports (use relative path from resources/ to types/)
         if !dependencies.is_empty() {
             let mut deps_vec: Vec<String> = dependencies.iter().cloned().collect();
             deps_vec.sort();
 
-            tokens.append(helpers::imports(&[(deps_vec, "./types".to_string())]));
+            tokens.append(helpers::imports(&[(deps_vec, "../types".to_string())]));
             tokens.push();
         }
 
@@ -333,6 +374,7 @@ mod tests {
                 },
             ],
             search_parameters: vec![],
+            extensions: vec![],
             documentation: Documentation {
                 short: "Information about an individual or animal".to_string(),
                 definition: "Demographics and administrative information".to_string(),

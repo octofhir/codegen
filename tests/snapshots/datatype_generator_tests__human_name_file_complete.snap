@@ -2,7 +2,7 @@
 source: tests/datatype_generator_tests.rs
 expression: output
 ---
-import { Element } from './types';
+import { Element } from '.';
 /**
  * Name of a human - parts and usage
  * 

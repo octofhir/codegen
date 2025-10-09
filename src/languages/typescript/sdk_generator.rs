@@ -1,5 +1,5 @@
-use crate::core::ir::TypeGraph;
 use crate::core::Result;
+use crate::core::ir::TypeGraph;
 use crate::languages::typescript::{
     DatatypeGenerator, HelpersGenerator, ManifestGenerator, PackageConfig, ResourceGenerator,
     TypeScriptBackend, ValidationGenerator,
@@ -42,9 +42,27 @@ impl TypeScriptSdkGenerator {
         }
     }
 
+    /// Create a new SDK generator with class generation enabled
+    pub fn new_with_classes(config: PackageConfig) -> Self {
+        let backend = TypeScriptBackend::new();
+        Self {
+            resource_generator: ResourceGenerator::new_with_classes(backend.clone()),
+            datatype_generator: DatatypeGenerator::new(backend.clone()),
+            validation_generator: ValidationGenerator::new(backend.clone()),
+            helpers_generator: HelpersGenerator::new(backend.clone()),
+            manifest_generator: ManifestGenerator::new(backend.clone(), config),
+            backend,
+        }
+    }
+
     /// Create SDK generator with default configuration
     pub fn with_defaults() -> Self {
         Self::new(PackageConfig::default())
+    }
+
+    /// Create SDK generator with default configuration and class generation
+    pub fn with_defaults_and_classes() -> Self {
+        Self::new_with_classes(PackageConfig::default())
     }
 
     /// Generate a complete TypeScript SDK from a type graph
@@ -54,40 +72,45 @@ impl TypeScriptSdkGenerator {
         let mut files = HashMap::new();
 
         // Generate package.json
-        files.insert(
-            "package.json".to_string(),
-            self.manifest_generator.generate_package_json()?,
-        );
+        files.insert("package.json".to_string(), self.manifest_generator.generate_package_json()?);
 
         // Generate tsconfig.json
-        files.insert(
-            "tsconfig.json".to_string(),
-            self.manifest_generator.generate_tsconfig_json()?,
-        );
+        files
+            .insert("tsconfig.json".to_string(), self.manifest_generator.generate_tsconfig_json()?);
 
         // Generate README.md
-        files.insert(
-            "README.md".to_string(),
-            self.manifest_generator.generate_readme()?,
-        );
+        files.insert("README.md".to_string(), self.manifest_generator.generate_readme()?);
 
         // Generate .gitignore
-        files.insert(
-            ".gitignore".to_string(),
-            self.manifest_generator.generate_gitignore()?,
-        );
+        files.insert(".gitignore".to_string(), self.manifest_generator.generate_gitignore()?);
 
         // Generate .npmignore
-        files.insert(
-            ".npmignore".to_string(),
-            self.manifest_generator.generate_npmignore()?,
-        );
+        files.insert(".npmignore".to_string(), self.manifest_generator.generate_npmignore()?);
 
         // Generate biome.json
+        files.insert("biome.json".to_string(), self.manifest_generator.generate_biome_json()?);
+
+        // Generate primitive types
         files.insert(
-            "biome.json".to_string(),
-            self.manifest_generator.generate_biome_json()?,
+            "src/primitives.ts".to_string(),
+            self.datatype_generator.generate_primitive_types(type_graph)?,
         );
+
+        // Generate datatypes
+        for (name, datatype) in &type_graph.datatypes {
+            let dependencies = self.datatype_generator.collect_dependencies(datatype);
+            let file_content =
+                self.datatype_generator.generate_datatype_file(datatype, &dependencies)?;
+            files.insert(format!("src/types/{}.ts", name), file_content);
+        }
+
+        // Generate resources
+        for (name, resource) in &type_graph.resources {
+            let dependencies = self.resource_generator.collect_dependencies(resource);
+            let file_content =
+                self.resource_generator.generate_resource_file(resource, &dependencies)?;
+            files.insert(format!("src/resources/{}.ts", name), file_content);
+        }
 
         // Generate validation types
         files.insert(
@@ -102,19 +125,19 @@ impl TypeScriptSdkGenerator {
         );
 
         // Generate main index
-        files.insert(
-            "src/index.ts".to_string(),
-            self.generate_main_index(type_graph)?,
-        );
+        files.insert("src/index.ts".to_string(), self.generate_main_index(type_graph)?);
 
         Ok(files)
     }
 
     /// Generate the main index.ts file
-    fn generate_main_index(&self, _type_graph: &TypeGraph) -> Result<String> {
-        let exports = vec![
+    fn generate_main_index(&self, type_graph: &TypeGraph) -> Result<String> {
+        let mut exports = vec![
             "// Auto-generated TypeScript SDK index".to_string(),
             "// This file is auto-generated. Do not edit manually.".to_string(),
+            "".to_string(),
+            "// Primitive types".to_string(),
+            "export * from './primitives';".to_string(),
             "".to_string(),
             "// Validation types and functions".to_string(),
             "export * from './validation';".to_string(),
@@ -123,6 +146,24 @@ impl TypeScriptSdkGenerator {
             "export * from './utilities';".to_string(),
             "".to_string(),
         ];
+
+        // Export datatypes
+        if !type_graph.datatypes.is_empty() {
+            exports.push("// Datatypes".to_string());
+            for name in type_graph.datatypes.keys() {
+                exports.push(format!("export * from './types/{}';", name));
+            }
+            exports.push("".to_string());
+        }
+
+        // Export resources
+        if !type_graph.resources.is_empty() {
+            exports.push("// Resources".to_string());
+            for name in type_graph.resources.keys() {
+                exports.push(format!("export * from './resources/{}';", name));
+            }
+            exports.push("".to_string());
+        }
 
         Ok(exports.join("\n"))
     }
@@ -140,17 +181,21 @@ impl TypeScriptSdkGenerator {
             // Create parent directories if needed
             if let Some(parent) = file_path.parent() {
                 fs::create_dir_all(parent).map_err(|e| {
-                    crate::core::Error::Io(std::io::Error::other(
-                        format!("Failed to create directory {}: {}", parent.display(), e),
-                    ))
+                    crate::core::Error::Io(std::io::Error::other(format!(
+                        "Failed to create directory {}: {}",
+                        parent.display(),
+                        e
+                    )))
                 })?;
             }
 
             // Write file
             fs::write(&file_path, content).map_err(|e| {
-                crate::core::Error::Io(std::io::Error::other(
-                    format!("Failed to write file {}: {}", file_path.display(), e),
-                ))
+                crate::core::Error::Io(std::io::Error::other(format!(
+                    "Failed to write file {}: {}",
+                    file_path.display(),
+                    e
+                )))
             })?;
         }
 

@@ -8,9 +8,7 @@ fn create_test_property() -> Property {
     Property {
         name: "identifier".to_string(),
         path: "Patient.identifier".to_string(),
-        property_type: PropertyType::Complex {
-            type_name: "Identifier".to_string(),
-        },
+        property_type: PropertyType::Complex { type_name: "Identifier".to_string() },
         cardinality: CardinalityRange::optional_array(),
         is_choice: false,
         choice_types: vec![],
@@ -20,7 +18,9 @@ fn create_test_property() -> Property {
         constraints: vec![],
         short_description: "An identifier for this patient".to_string(),
         definition: "An identifier that applies to this person as a patient".to_string(),
-        comments: Some("Patients are almost always assigned specific numerical identifiers".to_string()),
+        comments: Some(
+            "Patients are almost always assigned specific numerical identifiers".to_string(),
+        ),
         examples: vec![Example {
             label: "MRN example".to_string(),
             value: json!({"system": "http://hospital.example.org/patients", "value": "12345"}),
@@ -135,7 +135,10 @@ fn test_generate_simple_doc() {
 
 #[test]
 fn test_generate_choice_doc() {
-    let lines = DocumentationGenerator::generate_choice_doc("value", &["String".to_string(), "Boolean".to_string(), "Quantity".to_string()]);
+    let lines = DocumentationGenerator::generate_choice_doc(
+        "value",
+        &["String".to_string(), "Boolean".to_string(), "Quantity".to_string()],
+    );
 
     let doc = lines.join("\n");
 
@@ -207,9 +210,7 @@ fn test_text_wrapping() {
     let property = Property {
         name: "test".to_string(),
         path: "Test.test".to_string(),
-        property_type: PropertyType::Primitive {
-            type_name: "string".to_string(),
-        },
+        property_type: PropertyType::Primitive { type_name: "string".to_string() },
         cardinality: CardinalityRange::optional(),
         is_choice: false,
         choice_types: vec![],

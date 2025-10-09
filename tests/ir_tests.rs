@@ -30,6 +30,7 @@ fn test_serialize_type_graph() {
             examples: Vec::new(),
         }],
         search_parameters: Vec::new(),
+        extensions: Vec::new(),
         documentation: Documentation {
             short: "Information about an individual receiving health care services".to_string(),
             definition: "Demographics and other administrative information about an individual receiving care or other health-related services.".to_string(),

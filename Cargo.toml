@@ -16,6 +16,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "octofhir-codegen"
 path = "src/main.rs"
+required-features = ["cli"]
 
 [dependencies]
 # Async runtime
@@ -54,6 +55,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 # File system
 walkdir = "2.0"
 tempfile = "3.0"
+dirs = "5.0"
 
 # Date/time
 chrono = { version = "0.4", features = ["serde"] }

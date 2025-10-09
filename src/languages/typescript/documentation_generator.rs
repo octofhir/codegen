@@ -127,11 +127,7 @@ impl DocumentationGenerator {
 
     /// Generate minimal JSDoc for simple cases
     pub fn generate_simple_doc(description: &str) -> Vec<String> {
-        vec![
-            "/**".to_string(),
-            format!(" * {}", description),
-            " */".to_string(),
-        ]
+        vec!["/**".to_string(), format!(" * {}", description), " */".to_string()]
     }
 
     /// Describe cardinality in human-readable format
@@ -202,7 +198,9 @@ impl DocumentationGenerator {
 
         lines.push(format!(" * Choice element: {}", base_name));
         lines.push(" *".to_string());
-        lines.push(" * This is a FHIR choice element represented as a discriminated union.".to_string());
+        lines.push(
+            " * This is a FHIR choice element represented as a discriminated union.".to_string(),
+        );
         lines.push(" * Only one of the following properties should be present:".to_string());
 
         for type_name in types {
@@ -225,13 +223,18 @@ impl DocumentationGenerator {
             " * - Resource type is correct".to_string(),
             " *".to_string(),
             format!(" * @param resource - The {} resource to validate", resource_name),
-            " * @returns {{ValidationResult}} Validation result with any errors or warnings".to_string(),
+            " * @returns {{ValidationResult}} Validation result with any errors or warnings"
+                .to_string(),
             " */".to_string(),
         ]
     }
 
     /// Generate JSDoc for a helper function
-    pub fn generate_helper_doc(description: &str, params: &[(&str, &str)], returns: &str) -> Vec<String> {
+    pub fn generate_helper_doc(
+        description: &str,
+        params: &[(&str, &str)],
+        returns: &str,
+    ) -> Vec<String> {
         let mut lines = vec!["/**".to_string()];
 
         lines.push(format!(" * {}", description));

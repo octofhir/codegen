@@ -4,7 +4,7 @@ Generate type-safe FHIR SDKs for multiple programming languages.
 
 ## Status
 
-🚧 **Work in Progress** - Currently in development (Phase 1)
+🚧 **Work in Progress** - Phase 3: CLI & Config (Tasks 017-018 ✅)
 
 ## Features (Planned)
 
@@ -24,6 +24,30 @@ cargo install octofhir-codegen
 octofhir-codegen generate --language typescript --output ./sdk
 ```
 
+## CLI Usage
+
+```bash
+# Show help
+just cli-help
+
+# Show version
+just cli-version
+
+# List available generators
+just cli-list-generators
+
+# Validate configuration
+just cli-validate
+
+# Generate SDK
+just cli-generate
+
+# Run comprehensive demo
+just cli-demo
+```
+
+See `just --list` for all available CLI commands.
+
 ## Development
 
 ```bash
@@ -33,14 +57,14 @@ just build
 # Test
 just test
 
-# Review snapshot tests
-just insta-review
+# Run CLI commands
+just cli-help
 
 # Check everything
 just check
 ```
 
-See [justfile](justfile) for all available commands.
+See [justfile](justfile) for all available development commands.
 
 ## Documentation
 

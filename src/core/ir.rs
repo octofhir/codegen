@@ -134,6 +134,9 @@ pub struct ResourceType {
     /// Search parameters defined for this resource
     pub search_parameters: Vec<SearchParameter>,
 
+    /// Known extensions applicable to this resource
+    pub extensions: Vec<Extension>,
+
     /// Documentation
     pub documentation: Documentation,
 
@@ -493,6 +496,34 @@ pub enum SearchParamType {
     Special,
 }
 
+/// FHIR Extension definition
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Extension {
+    /// Extension canonical URL
+    pub url: String,
+
+    /// Extension name (derived from URL or id)
+    pub name: String,
+
+    /// Value type(s) allowed for this extension
+    pub value_types: Vec<String>,
+
+    /// Target resource/datatype this extension applies to
+    pub target_types: Vec<String>,
+
+    /// Cardinality (0..1 or 0..*)
+    pub cardinality: CardinalityRange,
+
+    /// Documentation
+    pub documentation: Documentation,
+
+    /// Is this extension a complex extension with sub-extensions?
+    pub is_complex: bool,
+
+    /// Sub-extensions (for complex extensions)
+    pub sub_extensions: Vec<Extension>,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -513,6 +544,7 @@ mod tests {
             base: Some("DomainResource".to_string()),
             properties: Vec::new(),
             search_parameters: Vec::new(),
+            extensions: Vec::new(),
             documentation: Documentation::default(),
             url: "http://hl7.org/fhir/StructureDefinition/Patient".to_string(),
             is_abstract: false,

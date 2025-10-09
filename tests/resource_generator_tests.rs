@@ -157,6 +157,7 @@ fn create_patient_resource() -> ResourceType {
             },
         ],
         search_parameters: vec![],
+        extensions: vec![],
         documentation: Documentation {
             short: "Information about an individual or animal receiving care or other health-related services".to_string(),
             definition: "Demographics and other administrative information about an individual or animal receiving care or other health-related services.".to_string(),
@@ -283,6 +284,7 @@ fn create_observation_resource() -> ResourceType {
             },
         ],
         search_parameters: vec![],
+        extensions: vec![],
         documentation: Documentation {
             short: "Measurements and simple assertions".to_string(),
             definition: "Measurements and simple assertions made about a patient, device or other subject.".to_string(),

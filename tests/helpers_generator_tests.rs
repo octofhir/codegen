@@ -42,6 +42,7 @@ fn create_patient_resource() -> ResourceType {
             },
         ],
         search_parameters: vec![],
+        extensions: vec![],
         documentation: Documentation {
             short: "Patient resource".to_string(),
             definition: "Demographics and administrative information".to_string(),
@@ -61,6 +62,7 @@ fn create_observation_resource() -> ResourceType {
         base: Some("DomainResource".to_string()),
         properties: vec![],
         search_parameters: vec![],
+        extensions: vec![],
         documentation: Documentation {
             short: "Observation resource".to_string(),
             definition: "Measurements and simple assertions".to_string(),
@@ -80,6 +82,7 @@ fn create_generic_resource() -> ResourceType {
         base: Some("DomainResource".to_string()),
         properties: vec![],
         search_parameters: vec![],
+        extensions: vec![],
         documentation: Documentation {
             short: "Condition resource".to_string(),
             definition: "Detailed information about conditions".to_string(),

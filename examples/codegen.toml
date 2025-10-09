@@ -1,0 +1,43 @@
+# OctoFHIR Codegen Configuration
+# Example configuration file for generating FHIR SDKs
+
+# FHIR version to generate for
+fhir_version = "R4"
+
+# Output directory for generated code
+output_dir = "./generated"
+
+# TypeScript Generator Configuration
+[generators.typescript]
+type = "typescript"
+enabled = true
+module_name = "fhir-r4"
+
+# Class generation options
+generate_classes = true          # Generate classes instead of interfaces
+generate_builders = false        # Generate separate Builder classes (future)
+generate_extensions = true       # Generate extension helper methods
+strict_mode = true              # Use TypeScript strict mode
+
+# Validation options
+emit_validation = true
+emit_helpers = true
+emit_tests = false
+
+# TypeScript compiler options
+target_version = "5.3"
+
+[generators.typescript.compiler_options]
+strict = true
+es_module_interop = true
+declaration = true
+source_map = false
+module_resolution = "node"
+
+# Rust Generator Configuration (future)
+[generators.rust]
+type = "rust"
+enabled = false
+crate_name = "fhir-r4"
+use_serde = true
+generate_builders = true

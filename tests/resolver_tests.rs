@@ -101,7 +101,7 @@ async fn test_get_resources_by_type() {
     let resolver = SchemaResolver::new(manager);
 
     // Search for StructureDefinitions (will be empty without packages)
-    let result = resolver.get_resources_by_type("StructureDefinition").await;
+    let result = resolver.get_resources_by_type("StructureDefinition", None).await;
 
     assert!(result.is_ok());
     let resources = result.unwrap();

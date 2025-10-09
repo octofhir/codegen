@@ -18,6 +18,6 @@ export interface Patient extends DomainResource {
   telecom?: ContactPoint[];
   gender?: string;
   birthDate?: string;
-  deceased?: boolean | dateTime;
+  deceased?: boolean | string;
   address?: Address[];
 }

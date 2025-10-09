@@ -3,6 +3,7 @@
 use crate::core::Result;
 use crate::core::ir::{DataType, Documentation, Property, ResourceType};
 use crate::generator::LanguageBackend;
+use crate::languages::typescript::backend::TypeScriptBackend;
 use crate::templates::genco_engine::{GencoTemplateEngine, helpers};
 use genco::prelude::*;
 
@@ -17,13 +18,16 @@ impl TypeScriptTemplates {
     ) -> Result<String> {
         let mut tokens = js::Tokens::new();
 
+        // Sanitize resource name for valid TypeScript identifier
+        let sanitized_name = TypeScriptBackend::sanitize_identifier(&resource.name);
+
         // Generate documentation
         let doc_lines = Self::format_documentation(&resource.documentation);
 
         // Generate properties
         let properties = Self::format_properties(&resource.properties, backend);
 
-        // Add resourceType literal
+        // Add resourceType literal (keep original name for runtime value)
         let mut all_props =
             vec![("resourceType".to_string(), helpers::string_literal(&resource.name), false)];
         all_props.extend(properties);
@@ -31,7 +35,7 @@ impl TypeScriptTemplates {
         // Determine base type
         let extends = resource.base.as_deref();
 
-        tokens.append(helpers::interface(&resource.name, extends, &all_props, Some(&doc_lines)));
+        tokens.append(helpers::interface(&sanitized_name, extends, &all_props, Some(&doc_lines)));
 
         GencoTemplateEngine::format_typescript(&tokens)
     }
@@ -43,6 +47,9 @@ impl TypeScriptTemplates {
     ) -> Result<String> {
         let mut tokens = js::Tokens::new();
 
+        // Sanitize datatype name for valid TypeScript identifier
+        let sanitized_name = TypeScriptBackend::sanitize_identifier(&datatype.name);
+
         // Generate documentation
         let doc_lines = Self::format_documentation(&datatype.documentation);
 
@@ -52,7 +59,7 @@ impl TypeScriptTemplates {
         // Determine base type
         let extends = datatype.base.as_deref();
 
-        tokens.append(helpers::interface(&datatype.name, extends, &properties, Some(&doc_lines)));
+        tokens.append(helpers::interface(&sanitized_name, extends, &properties, Some(&doc_lines)));
 
         GencoTemplateEngine::format_typescript(&tokens)
     }
@@ -235,6 +242,7 @@ mod tests {
                 examples: vec![],
             }],
             search_parameters: vec![],
+            extensions: vec![],
             documentation: Documentation {
                 short: "Patient resource".to_string(),
                 definition: "Demographics and administrative information".to_string(),

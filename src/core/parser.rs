@@ -25,6 +25,30 @@ impl StructureDefinitionParser {
         Self { cache: HashMap::new(), resolver: None }
     }
 
+    /// Extract type name from FHIR canonical URL
+    ///
+    /// Examples:
+    /// - "http://hl7.org/fhir/StructureDefinition/DomainResource" -> "DomainResource"
+    /// - "http://hl7.org/fhirpath/System.String" -> "string"
+    /// - "DomainResource" -> "DomainResource" (already a type name)
+    fn extract_type_name(url_or_name: &str) -> String {
+        // If it's already a simple name (no slashes), return as-is
+        if !url_or_name.contains('/') {
+            return url_or_name.to_string();
+        }
+
+        // Extract the last segment from URL
+        let type_name = url_or_name.split('/').last().unwrap_or(url_or_name);
+
+        // Handle FHIRPath System types
+        if type_name.starts_with("System.") {
+            // "System.String" -> "string"
+            type_name.strip_prefix("System.").unwrap_or(type_name).to_lowercase()
+        } else {
+            type_name.to_string()
+        }
+    }
+
     /// Create parser with schema resolver
     pub fn with_resolver(resolver: Arc<SchemaResolver>) -> Self {
         Self { cache: HashMap::new(), resolver: Some(resolver) }
@@ -206,21 +230,25 @@ impl StructureDefinitionParser {
 
     /// Parse element type information
     fn parse_element_type(&self, type_obj: &Value) -> Result<ElementType> {
-        let code = type_obj
+        let code_raw = type_obj
             .get("code")
             .and_then(|v| v.as_str())
-            .ok_or_else(|| Error::Parser("Type missing code".to_string()))?
-            .to_string();
+            .ok_or_else(|| Error::Parser("Type missing code".to_string()))?;
+
+        // Extract type name from URL if needed
+        let code = Self::extract_type_name(code_raw);
 
         // Handle Reference types with targetProfile
         let target_profiles = if code == "Reference" {
             type_obj
                 .get("targetProfile")
                 .and_then(|v| match v {
-                    Value::String(s) => Some(vec![s.clone()]),
-                    Value::Array(arr) => {
-                        Some(arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-                    }
+                    Value::String(s) => Some(vec![Self::extract_type_name(s)]),
+                    Value::Array(arr) => Some(
+                        arr.iter()
+                            .filter_map(|v| v.as_str().map(|s| Self::extract_type_name(s)))
+                            .collect(),
+                    ),
                     _ => None,
                 })
                 .unwrap_or_default()
@@ -278,11 +306,15 @@ impl StructureDefinitionParser {
         // Convert elements to properties
         let properties = self.elements_to_properties(&parsed.elements, &parsed.name)?;
 
+        // Extract type name from base URL if present
+        let base = parsed.base_definition.as_ref().map(|url| Self::extract_type_name(url));
+
         Ok(ResourceType {
             name: parsed.name.clone(),
-            base: parsed.base_definition.clone(),
+            base,
             properties,
             search_parameters: vec![], // Will be populated by resolver
+            extensions: vec![],        // Will be populated by resolver
             documentation: Documentation {
                 short: format!("FHIR {} Resource", parsed.name),
                 definition: String::new(),
@@ -304,9 +336,12 @@ impl StructureDefinitionParser {
 
         let properties = self.elements_to_properties(&parsed.elements, &parsed.name)?;
 
+        // Extract type name from base URL if present
+        let base = parsed.base_definition.as_ref().map(|url| Self::extract_type_name(url));
+
         Ok(DataType {
             name: parsed.name.clone(),
-            base: parsed.base_definition.clone(),
+            base,
             properties,
             documentation: Documentation {
                 short: format!("FHIR {} DataType", parsed.name),

@@ -80,13 +80,13 @@ fn test_reference_type_mapping() {
 
     // Single target
     let single_ref = PropertyType::Reference { target_types: vec!["Patient".to_string()] };
-    assert_eq!(backend.map_type(&single_ref), "Reference<Patient>");
+    assert_eq!(backend.map_type(&single_ref), "Reference<\"Patient\">");
 
     // Multiple targets
     let multi_ref = PropertyType::Reference {
         target_types: vec!["Patient".to_string(), "Organization".to_string()],
     };
-    assert_eq!(backend.map_type(&multi_ref), "Reference<Patient | Organization>");
+    assert_eq!(backend.map_type(&multi_ref), "Reference<\"Patient\" | \"Organization\">");
 }
 
 #[test]

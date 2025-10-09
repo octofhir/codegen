@@ -15,6 +15,6 @@ export interface Observation extends DomainResource {
   identifier?: Identifier[];
   status: string;
   code: CodeableConcept;
-  subject?: Reference<Patient | Group | Device | Location>;
-  value?: Quantity | CodeableConcept | string | boolean | integer | Range;
+  subject?: Reference<"Patient" | "Group" | "Device" | "Location">;
+  value?: Quantity | CodeableConcept | string | boolean | number | Range;
 }

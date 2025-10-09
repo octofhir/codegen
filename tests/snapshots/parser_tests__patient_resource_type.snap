@@ -194,6 +194,7 @@ expression: resource_type
     }
   ],
   "search_parameters": [],
+  "extensions": [],
   "documentation": {
     "short": "FHIR Patient Resource",
     "definition": "",

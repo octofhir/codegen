@@ -157,6 +157,7 @@ async fn test_mock_generator_generate() {
             base: Some("DomainResource".to_string()),
             properties: vec![],
             search_parameters: vec![],
+            extensions: vec![],
             documentation: Documentation::default(),
             url: "http://hl7.org/fhir/StructureDefinition/Patient".to_string(),
             is_abstract: false,

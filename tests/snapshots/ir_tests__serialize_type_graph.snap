@@ -32,6 +32,7 @@ expression: json
         }
       ],
       "search_parameters": [],
+      "extensions": [],
       "documentation": {
         "short": "Information about an individual receiving health care services",
         "definition": "Demographics and other administrative information about an individual receiving care or other health-related services.",

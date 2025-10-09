@@ -195,7 +195,8 @@ impl TypeGraphBuilder {
         debug!("Loading search parameters");
 
         // Get all SearchParameter resources
-        let search_params = self.resolver.get_resources_by_type("SearchParameter").await?;
+        let search_params =
+            self.resolver.get_resources_by_type("SearchParameter", Some(1000)).await?;
 
         debug!("Found {} search parameters", search_params.len());
 

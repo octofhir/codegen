@@ -2,7 +2,7 @@
 source: tests/resource_generator_tests.rs
 expression: output
 ---
-import { Address, ContactPoint, DomainResource, HumanName, Identifier } from './types';
+import { Address, ContactPoint, DomainResource, HumanName, Identifier } from '../types';
 /**
  * Information about an individual or animal receiving care or other health-related services
  * 
@@ -19,7 +19,7 @@ export interface Patient extends DomainResource {
   telecom?: ContactPoint[];
   gender?: string;
   birthDate?: string;
-  deceased?: boolean | dateTime;
+  deceased?: boolean | string;
   address?: Address[];
 }
 

@@ -24,6 +24,7 @@
 #![warn(missing_docs)]
 #![warn(clippy::all)]
 
+pub mod config;
 pub mod core;
 pub mod generator;
 pub mod languages;

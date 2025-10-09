@@ -7,7 +7,7 @@ expression: output
  * 
  * These types wrap native TypeScript primitives to support FHIR extensions.
  */
-import { Extension } from './Extension';
+import { Extension } from './types/Extension';
 /**
  * FHIR Primitive wrapper type
  * 
@@ -27,8 +27,8 @@ export interface FhirPrimitive<T> {
 /**
  * true | false
  */
-export type boolean = FhirPrimitive<boolean>;
+export type FhirBoolean = FhirPrimitive<boolean>;
 /**
  * A sequence of Unicode characters
  */
-export type string = FhirPrimitive<string>;
+export type FhirString = FhirPrimitive<string>;

@@ -150,6 +150,7 @@ impl SchemaResolver {
     /// # Arguments
     ///
     /// * `resource_type` - FHIR resource type (e.g., "StructureDefinition")
+    /// * `limit` - Maximum number of resources to return (defaults to 1000)
     ///
     /// # Returns
     ///
@@ -157,14 +158,17 @@ impl SchemaResolver {
     pub async fn get_resources_by_type(
         &self,
         resource_type: &str,
+        limit: Option<usize>,
     ) -> Result<Vec<ResolvedResource>> {
-        debug!("Searching for resources of type: {}", resource_type);
+        let limit = limit.unwrap_or(1000);
+        debug!("Searching for resources of type: {} (limit: {})", resource_type, limit);
 
         let query = self
             .manager
             .search()
             .await
             .resource_type(resource_type)
+            .limit(limit)
             .execute()
             .await
             .map_err(|e| Error::CanonicalManager(e.to_string()))?;
@@ -195,7 +199,8 @@ impl SchemaResolver {
     pub async fn get_all_structure_definitions(&self, _fhir_version: &str) -> Result<Vec<Value>> {
         debug!("Loading all StructureDefinitions");
 
-        let resources = self.get_resources_by_type("StructureDefinition").await?;
+        // Use a high limit to get all StructureDefinitions (typically 145+ for R4)
+        let resources = self.get_resources_by_type("StructureDefinition", Some(1000)).await?;
 
         Ok(resources.into_iter().map(|r| r.resource.content).collect())
     }

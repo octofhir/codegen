@@ -325,7 +325,7 @@ mod tests {
         let tokens = helpers::type_alias(
             "Status",
             "\"active\" | \"inactive\"",
-            Some(&vec!["Status type".to_string()]),
+            Some(&["Status type".to_string()]),
         );
         let output = GencoTemplateEngine::format_typescript(&tokens).unwrap();
 

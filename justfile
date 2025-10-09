@@ -67,11 +67,96 @@ clean:
 
 # Run the CLI
 run *ARGS:
-    cargo run -- {{ARGS}}
+    cargo run --bin octofhir-codegen --features cli -- {{ARGS}}
 
 # Run in release mode
 run-release *ARGS:
-    cargo run --release -- {{ARGS}}
+    cargo run --release --bin octofhir-codegen --features cli -- {{ARGS}}
+
+# === CLI Command Examples ===
+
+# Show CLI help
+cli-help:
+    cargo run --bin octofhir-codegen --features cli -- --help
+
+# Show version information
+cli-version:
+    cargo run --bin octofhir-codegen --features cli -- --version
+
+# Show detailed version information
+cli-version-detailed:
+    cargo run --bin octofhir-codegen --features cli -- version --detailed
+
+# List available generators
+cli-list-generators:
+    cargo run --bin octofhir-codegen --features cli -- list-generators
+
+# List generators with details
+cli-list-generators-detailed:
+    cargo run --bin octofhir-codegen --features cli -- list-generators --detailed
+
+# Validate example configuration
+cli-validate:
+    cargo run --bin octofhir-codegen --features cli -- validate --config examples/codegen.toml
+
+# Validate with detailed output
+cli-validate-detailed:
+    cargo run --bin octofhir-codegen --features cli -- validate --config examples/codegen.toml --detailed
+
+# Show generate command help
+cli-generate-help:
+    cargo run --bin octofhir-codegen --features cli -- generate --help
+
+# Show init command help
+cli-init-help:
+    cargo run --bin octofhir-codegen --features cli -- init --help
+
+# Run init command (example)
+cli-init:
+    cargo run --bin octofhir-codegen --features cli -- init --template typescript
+
+# Run generate command (example)
+cli-generate:
+    cargo run --bin octofhir-codegen --features cli -- generate --config examples/codegen.toml
+
+# Describe TypeScript generator
+cli-describe-typescript:
+    cargo run --bin octofhir-codegen --features cli -- describe typescript
+
+# Describe TypeScript generator with examples
+cli-describe-typescript-examples:
+    cargo run --bin octofhir-codegen --features cli -- describe typescript --examples
+
+# Analyze FHIR package (example)
+cli-analyze:
+    cargo run --bin octofhir-codegen --features cli -- analyze --package hl7.fhir.r4.core@4.0.1 --show-resources
+
+# Run CLI with verbose logging
+cli-verbose:
+    cargo run --bin octofhir-codegen --features cli -- -vvv list-generators
+
+# Run CLI with JSON output format
+cli-json:
+    cargo run --bin octofhir-codegen --features cli -- --format json list-generators
+
+# Run CLI with no color
+cli-no-color:
+    cargo run --bin octofhir-codegen --features cli -- --no-color list-generators
+
+# Show all CLI commands (comprehensive demo)
+cli-demo:
+    @echo "=== OctoFHIR Codegen CLI Demo ==="
+    @echo ""
+    @echo "1. Version:"
+    @just cli-version
+    @echo ""
+    @echo "2. List Generators:"
+    @just cli-list-generators
+    @echo ""
+    @echo "3. Validate Config:"
+    @just cli-validate
+    @echo ""
+    @echo "Demo complete!"
 
 # Watch and rebuild on changes (requires cargo-watch)
 watch:

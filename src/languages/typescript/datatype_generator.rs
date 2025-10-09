@@ -3,6 +3,8 @@
 use crate::core::Result;
 use crate::core::ir::{DataType, TypeGraph};
 use crate::generator::LanguageBackend;
+use crate::languages::typescript::backend::TypeScriptBackend;
+use crate::languages::typescript::class_generator::ClassGenerator;
 use crate::languages::typescript::templates::TypeScriptTemplates;
 use crate::templates::genco_engine::{GencoTemplateEngine, helpers};
 use genco::prelude::*;
@@ -12,17 +14,28 @@ use std::collections::HashSet;
 pub struct DatatypeGenerator<B: LanguageBackend> {
     /// Language backend for type mapping
     backend: B,
+    /// Whether to generate classes instead of interfaces
+    use_classes: bool,
 }
 
 impl<B: LanguageBackend> DatatypeGenerator<B> {
     /// Create a new datatype generator
     pub fn new(backend: B) -> Self {
-        Self { backend }
+        Self { backend, use_classes: false }
     }
 
-    /// Generate TypeScript interface for a complex datatype
+    /// Create a new datatype generator with class generation enabled
+    pub fn new_with_classes(backend: B) -> Self {
+        Self { backend, use_classes: true }
+    }
+
+    /// Generate TypeScript interface or class for a complex datatype
     pub fn generate_datatype(&self, datatype: &DataType) -> Result<String> {
-        TypeScriptTemplates::datatype_to_interface(datatype, &self.backend)
+        if self.use_classes {
+            ClassGenerator::generate_datatype_class(datatype, &self.backend)
+        } else {
+            TypeScriptTemplates::datatype_to_interface(datatype, &self.backend)
+        }
     }
 
     /// Generate TypeScript interfaces for all datatypes in a type graph
@@ -114,7 +127,7 @@ impl<B: LanguageBackend> DatatypeGenerator<B> {
         tokens.push();
 
         // Import Extension for the FhirPrimitive type
-        tokens.append("import { Extension } from './Extension';");
+        tokens.append("import { Extension } from './types/Extension';");
         tokens.push();
         tokens.push();
 
@@ -132,6 +145,20 @@ impl<B: LanguageBackend> DatatypeGenerator<B> {
             if let Some(primitive) = graph.primitives.get(primitive_name) {
                 let ts_type = self.map_primitive_to_ts(primitive_name);
 
+                // Create a proper TypeScript type name (capitalize and prefix with Fhir to avoid shadowing)
+                let type_name = TypeScriptBackend::sanitize_identifier(primitive_name);
+                // For primitives that would shadow built-in types, prefix with Fhir
+                let safe_type_name =
+                    if matches!(type_name.as_str(), "string" | "boolean" | "number") {
+                        format!(
+                            "Fhir{}",
+                            type_name.chars().next().unwrap().to_uppercase().to_string()
+                                + &type_name[1..]
+                        )
+                    } else {
+                        type_name
+                    };
+
                 // JSDoc for the type
                 let doc = vec![primitive.documentation.short.clone()];
 
@@ -140,7 +167,7 @@ impl<B: LanguageBackend> DatatypeGenerator<B> {
 
                 // Type alias
                 tokens.append("export type ");
-                tokens.append(primitive_name);
+                tokens.append(&safe_type_name);
                 tokens.append(" = FhirPrimitive<");
                 tokens.append(&ts_type);
                 tokens.append(">;");
@@ -224,10 +251,32 @@ impl<B: LanguageBackend> DatatypeGenerator<B> {
         let mut deps = HashSet::new();
 
         for property in &datatype.properties {
-            if let Some(type_name) = property.property_type.type_name() {
-                // Skip primitives
-                if !Self::is_primitive(type_name) {
+            // Collect types based on property type variant
+            match &property.property_type {
+                crate::core::ir::PropertyType::Primitive { type_name } => {
+                    if !Self::is_primitive(type_name) {
+                        deps.insert(type_name.to_string());
+                    }
+                }
+                crate::core::ir::PropertyType::Complex { type_name } => {
                     deps.insert(type_name.to_string());
+                }
+                crate::core::ir::PropertyType::Reference { .. } => {
+                    // Add Reference itself
+                    deps.insert("Reference".to_string());
+                    // Note: We don't add target types as dependencies because we use
+                    // string literal unions (Reference<"Patient" | "Group">), not actual types
+                }
+                crate::core::ir::PropertyType::Choice { types } => {
+                    // Add all choice types
+                    for choice_type in types {
+                        if !Self::is_primitive(choice_type) {
+                            deps.insert(choice_type.to_string());
+                        }
+                    }
+                }
+                crate::core::ir::PropertyType::BackboneElement { .. } => {
+                    deps.insert("BackboneElement".to_string());
                 }
             }
         }
@@ -276,12 +325,13 @@ impl<B: LanguageBackend> DatatypeGenerator<B> {
     ) -> Result<String> {
         let mut tokens = js::Tokens::new();
 
-        // Generate imports
+        // Generate imports (datatypes in src/types/ import from same directory)
         if !dependencies.is_empty() {
             let mut deps_vec: Vec<String> = dependencies.iter().cloned().collect();
             deps_vec.sort();
 
-            tokens.append(helpers::imports(&[(deps_vec, "./types".to_string())]));
+            // Use '.' for same directory imports
+            tokens.append(helpers::imports(&[(deps_vec, ".".to_string())]));
             tokens.push();
         }
 

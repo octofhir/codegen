@@ -144,7 +144,6 @@ impl ManifestGenerator {
         })
     }
 
-
     /// Generate README.md
     pub fn generate_readme(&self) -> Result<String> {
         let readme = format!(
@@ -432,7 +431,8 @@ coverage/
             }
         });
 
-        serde_json::to_string_pretty(&biome)
-            .map_err(|e| crate::core::Error::Generator(format!("Failed to serialize biome.json: {}", e)))
+        serde_json::to_string_pretty(&biome).map_err(|e| {
+            crate::core::Error::Generator(format!("Failed to serialize biome.json: {}", e))
+        })
     }
 }
